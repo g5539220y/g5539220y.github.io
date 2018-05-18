@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MapReduce," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="需求：接着上一个流量汇总排序的写，把电话号码分类归省原理：自定义partition。通过继承partition的类，来重写getPartition方法Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask123456789101112131415161718public class ProvincePartitioner ex">
+<meta name="keywords" content="MapReduce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拯救笔记----Partition之电话号码归属地分类">
+<meta property="og:url" content="http://yoursite.com/2017/12/14/拯救笔记----Partition之电话号码归属地分类/index.html">
+<meta property="og:site_name" content="M78星云档案库">
+<meta property="og:description" content="需求：接着上一个流量汇总排序的写，把电话号码分类归省原理：自定义partition。通过继承partition的类，来重写getPartition方法Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask123456789101112131415161718public class ProvincePartitioner ex">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-14T13:26:52.334Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="拯救笔记----Partition之电话号码归属地分类">
+<meta name="twitter:description" content="需求：接着上一个流量汇总排序的写，把电话号码分类归省原理：自定义partition。通过继承partition的类，来重写getPartition方法Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask123456789101112131415161718public class ProvincePartitioner ex">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/14/拯救笔记----Partition之电话号码归属地分类/"/>
+
+
+
+
+
+  <title>拯救笔记----Partition之电话号码归属地分类 | M78星云档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">M78星云档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">存放第七空间的所有档案</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/14/拯救笔记----Partition之电话号码归属地分类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="M78星云档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">拯救笔记----Partition之电话号码归属地分类</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-14T21:05:00+08:00">
+                2017-12-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="需求：接着上一个流量汇总排序的写，把电话号码分类归省"><a href="#需求：接着上一个流量汇总排序的写，把电话号码分类归省" class="headerlink" title="需求：接着上一个流量汇总排序的写，把电话号码分类归省"></a>需求：接着上一个流量汇总排序的写，把电话号码分类归省</h2><h3 id="原理：自定义partition。通过继承partition的类，来重写getPartition方法"><a href="#原理：自定义partition。通过继承partition的类，来重写getPartition方法" class="headerlink" title="原理：自定义partition。通过继承partition的类，来重写getPartition方法"></a>原理：自定义partition。通过继承partition的类，来重写getPartition方法</h3><h3 id="Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask"><a href="#Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask" class="headerlink" title="Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask"></a>Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class ProvincePartitioner extends Partitioner&lt;flowbean,IntWritable&gt;&#123;</span><br><span class="line">    static HashMap&lt;String,Integer&gt; provinceMap =new HashMap&lt;String,Integer&gt;();</span><br><span class="line">    static &#123;</span><br><span class="line">        provinceMap.put(&quot;135&quot;, 0);</span><br><span class="line">    	provinceMap.put(&quot;136&quot;, 1);</span><br><span class="line">    	provinceMap.put(&quot;137&quot;, 2);</span><br><span class="line">    	provinceMap.put(&quot;138&quot;, 3);</span><br><span class="line">    	provinceMap.put(&quot;139&quot;, 4);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">	@Override</span><br><span class="line">	public int getPartition(flowbean k, IntWritable arg1, int arg2) &#123;</span><br><span class="line">		long str = k.getNum();</span><br><span class="line">		String numb = String.valueOf(str);</span><br><span class="line">		Integer res=provinceMap.get(numb.substring(0, 3));</span><br><span class="line">		return res==null?5:res;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛"><a href="#差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛" class="headerlink" title="差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛"></a>差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛</h3><h3 id="然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区"><a href="#然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区" class="headerlink" title="然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区"></a>然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区</h3><h3 id="需要注意的是-一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区"><a href="#需要注意的是-一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区" class="headerlink" title="需要注意的是 一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区"></a>需要注意的是 一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区</h3><p>像这样</p>
+<pre><code>job.setNumReduceTasks(6);
+job.setPartitionerClass(那个Partition类的类名.class);
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MapReduce/" rel="tag"># MapReduce</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/13/yarn与mr程序的那些事/" rel="next" title="yarn与mr程序的那些事">
+                <i class="fa fa-chevron-left"></i> yarn与mr程序的那些事
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/15/拯救笔记----解决恼人的数据倾斜/" rel="prev" title="拯救笔记----解决恼人的数据倾斜">
+                拯救笔记----解决恼人的数据倾斜 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gy</p>
+              <p class="site-description motion-element" itemprop="description">我是泰罗！对不起！泰罗</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求：接着上一个流量汇总排序的写，把电话号码分类归省"><span class="nav-number">1.</span> <span class="nav-text">需求：接着上一个流量汇总排序的写，把电话号码分类归省</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理：自定义partition。通过继承partition的类，来重写getPartition方法"><span class="nav-number">1.1.</span> <span class="nav-text">原理：自定义partition。通过继承partition的类，来重写getPartition方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask"><span class="nav-number">1.2.</span> <span class="nav-text">Partition：在map阶段的收集器到缓冲区排序后的一个分区组件，为maptask的数据分组从而发送到reduceTask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛"><span class="nav-number">1.3.</span> <span class="nav-text">差不多就这样！就是要通过什么特征分区搞进来，这个getPartition方法也有一个kv对是跟map的k-out和v-out对应的，毕竟是mapTask拉出来的东西嘛</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区"><span class="nav-number">1.4.</span> <span class="nav-text">然后把想要区分的东西拿出来，搞个什么字典啊，数据库啊，做一个特征分析，最后得出一个分区格子。这里弄个HashMap，把对应的手机号分配到对应的几号区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#需要注意的是-一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区"><span class="nav-number">1.5.</span> <span class="nav-text">需要注意的是 一定要考虑不满足条件的那个区，把那个区定到最后！！！！还有设置配置文件时候一定要把这个区多留出来，比如这个分5个区，多一个不和条件区，所以一共分6个区</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

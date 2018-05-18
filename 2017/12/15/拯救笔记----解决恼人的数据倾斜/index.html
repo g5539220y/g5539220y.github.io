@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MapReduce," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行实例：map里面的join操作要想把文件加载到maptask中！必须知道的四条配置1234job.addArchiveToClassPath(archive)">
+<meta name="keywords" content="MapReduce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拯救笔记----解决恼人的数据倾斜">
+<meta property="og:url" content="http://yoursite.com/2017/12/15/拯救笔记----解决恼人的数据倾斜/index.html">
+<meta property="og:site_name" content="M78星云档案库">
+<meta property="og:description" content="数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行实例：map里面的join操作要想把文件加载到maptask中！必须知道的四条配置1234job.addArchiveToClassPath(archive)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-15T05:41:06.960Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="拯救笔记----解决恼人的数据倾斜">
+<meta name="twitter:description" content="数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行实例：map里面的join操作要想把文件加载到maptask中！必须知道的四条配置1234job.addArchiveToClassPath(archive)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/15/拯救笔记----解决恼人的数据倾斜/"/>
+
+
+
+
+
+  <title>拯救笔记----解决恼人的数据倾斜 | M78星云档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">M78星云档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">存放第七空间的所有档案</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/15/拯救笔记----解决恼人的数据倾斜/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="M78星云档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">拯救笔记----解决恼人的数据倾斜</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-15T08:51:00+08:00">
+                2017-12-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜"><a href="#数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜" class="headerlink" title="数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜"></a>数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜</h2><h3 id="解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行"><a href="#解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行" class="headerlink" title="解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行"></a>解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行</h3><h2 id="实例：map里面的join操作"><a href="#实例：map里面的join操作" class="headerlink" title="实例：map里面的join操作"></a>实例：map里面的join操作</h2><h3 id="要想把文件加载到maptask中！必须知道的四条配置"><a href="#要想把文件加载到maptask中！必须知道的四条配置" class="headerlink" title="要想把文件加载到maptask中！必须知道的四条配置"></a>要想把文件加载到maptask中！必须知道的四条配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">job.addArchiveToClassPath(archive);  缓存jar包到maptask运行节点的classpath中</span><br><span class="line">job.addFileToClassPath(file);        缓存文件到maptask运行节点的classpath中</span><br><span class="line">job.addCacheArchive(uri);            缓存压缩包到maptask运行节点的工作目录中</span><br><span class="line">job.addCacheFile(uri);               缓存普通文件到maptask运行节点的工作目录中</span><br></pre></td></tr></table></figure>
+<h3 id="配置完这四条之后，就可以开始从mapper类里读它了。"><a href="#配置完这四条之后，就可以开始从mapper类里读它了。" class="headerlink" title="配置完这四条之后，就可以开始从mapper类里读它了。"></a>配置完这四条之后，就可以开始从mapper类里读它了。</h3><h3 id="mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里"><a href="#mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里" class="headerlink" title="mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里"></a>mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">  Map&lt;String, String&gt; infomap = new HashMap&lt;String, String&gt;();</span><br><span class="line">@Override</span><br><span class="line">protected void setup(Mapper&lt;LongWritable, Text, Text, NullWritable&gt;.Context context)</span><br><span class="line">		throws IOException, InterruptedException &#123;</span><br><span class="line">	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(&quot;market.txt&quot;)));</span><br><span class="line">    String line;</span><br><span class="line">	while(StringUtils.isNotEmpty(line=br.readLine()))</span><br><span class="line">    &#123;</span><br><span class="line">    	String[] fields=line.split(&quot;\t&quot;);</span><br><span class="line">    	String tempinfo = fields[0]+&quot;	&quot;+fields[1];</span><br><span class="line">    	infomap.put(fields[2],tempinfo); 		    	</span><br><span class="line">    &#125;</span><br><span class="line">	br.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中-通过StringBuffer来读数据"><a href="#把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中-通过StringBuffer来读数据" class="headerlink" title="把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中(通过StringBuffer来读数据)"></a>把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中(通过StringBuffer来读数据)</h4><h3 id="然后到Map阶段正常切就行，把切出来的共有字段直接map-get出来，拼接输出就行，简单粗暴！"><a href="#然后到Map阶段正常切就行，把切出来的共有字段直接map-get出来，拼接输出就行，简单粗暴！" class="headerlink" title="然后到Map阶段正常切就行，把切出来的共有字段直接map.get出来，拼接输出就行，简单粗暴！"></a>然后到Map阶段正常切就行，把切出来的共有字段直接map.get出来，拼接输出就行，简单粗暴！</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  protected void map(LongWritable key, Text value, Mapper&lt;LongWritable, Text, Text, NullWritable&gt;.Context context)</span><br><span class="line">		throws IOException, InterruptedException &#123;</span><br><span class="line">		Text k = new Text();</span><br><span class="line">	    String gunline = value.toString();</span><br><span class="line">	    String[] gun_fields=gunline.split(&quot;\t&quot;);</span><br><span class="line">	    String info = infomap.get(gun_fields[0]);</span><br><span class="line">	    k.set(gunline+&quot;	&quot;+info);</span><br><span class="line">	    context.write(k, NullWritable.get());			  			    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="警醒自己！！！！在所有工作都做完之后一定"><a href="#警醒自己！！！！在所有工作都做完之后一定" class="headerlink" title="警醒自己！！！！在所有工作都做完之后一定"></a>警醒自己！！！！在所有工作都做完之后一定</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boolean res = job.waitForCompletion(true);</span><br><span class="line">System.exit(res?0:1);</span><br></pre></td></tr></table></figure>
+<p>刚才怎么搞都运行不了 就是因为没写这句话！看来job内容不能复制了。越复制越傻，多写几遍为妙！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MapReduce/" rel="tag"># MapReduce</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/14/拯救笔记----Partition之电话号码归属地分类/" rel="next" title="拯救笔记----Partition之电话号码归属地分类">
+                <i class="fa fa-chevron-left"></i> 拯救笔记----Partition之电话号码归属地分类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/15/烂大街的题目----找出两个人的共同好友/" rel="prev" title="烂大街的题目----找出两个人的共同好友">
+                烂大街的题目----找出两个人的共同好友 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gy</p>
+              <p class="site-description motion-element" itemprop="description">我是泰罗！对不起！泰罗</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜"><span class="nav-number">1.</span> <span class="nav-text">数据倾斜：由于有的数据的特殊原因，在map阶段后有很大的一部分数据进入到同一个reduce里面，而导致其他reduce接收的数据少。从而产生了数据倾斜</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行"><span class="nav-number">1.1.</span> <span class="nav-text">解决方法：尽量在map里面解决，利用map的分布式缓存，把需要处理的数据直接放在map里执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例：map里面的join操作"><span class="nav-number">2.</span> <span class="nav-text">实例：map里面的join操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#要想把文件加载到maptask中！必须知道的四条配置"><span class="nav-number">2.1.</span> <span class="nav-text">要想把文件加载到maptask中！必须知道的四条配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置完这四条之后，就可以开始从mapper类里读它了。"><span class="nav-number">2.2.</span> <span class="nav-text">配置完这四条之后，就可以开始从mapper类里读它了。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里"><span class="nav-number">2.3.</span> <span class="nav-text">mapper框架中有个setup方法，它是负责初始化一些数据，在map前执行，只执行一次，在这里通过setup方法把想拼的信息放进map里</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中-通过StringBuffer来读数据"><span class="nav-number">2.3.1.</span> <span class="nav-text">把信息表中需要拼接的数据先放在tempinfo里面，在通过一个拼接的共有字段来设置key，put到HashMap中(通过StringBuffer来读数据)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#然后到Map阶段正常切就行，把切出来的共有字段直接map-get出来，拼接输出就行，简单粗暴！"><span class="nav-number">2.4.</span> <span class="nav-text">然后到Map阶段正常切就行，把切出来的共有字段直接map.get出来，拼接输出就行，简单粗暴！</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#警醒自己！！！！在所有工作都做完之后一定"><span class="nav-number">3.</span> <span class="nav-text">警醒自己！！！！在所有工作都做完之后一定</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

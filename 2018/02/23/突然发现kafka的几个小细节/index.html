@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="kafka," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.  kafka生产数据时的分组策略默认是defaultPartition Utils.abs(key.hashCode)%numPartitions key是在发送数据时传入的（proder.send（Keyedmessage（topic，myPartionKey，messAge）））， 2. kafka如何保证数据的完全生产1234  ack机制，broker表示发来的数据已确认无误，表示数">
+<meta name="keywords" content="kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="突然发现kafka的几个小细节">
+<meta property="og:url" content="http://yoursite.com/2018/02/23/突然发现kafka的几个小细节/index.html">
+<meta property="og:site_name" content="M78星云档案库">
+<meta property="og:description" content="1.  kafka生产数据时的分组策略默认是defaultPartition Utils.abs(key.hashCode)%numPartitions key是在发送数据时传入的（proder.send（Keyedmessage（topic，myPartionKey，messAge）））， 2. kafka如何保证数据的完全生产1234  ack机制，broker表示发来的数据已确认无误，表示数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-23T13:56:17.829Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="突然发现kafka的几个小细节">
+<meta name="twitter:description" content="1.  kafka生产数据时的分组策略默认是defaultPartition Utils.abs(key.hashCode)%numPartitions key是在发送数据时传入的（proder.send（Keyedmessage（topic，myPartionKey，messAge）））， 2. kafka如何保证数据的完全生产1234  ack机制，broker表示发来的数据已确认无误，表示数">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/23/突然发现kafka的几个小细节/"/>
+
+
+
+
+
+  <title>突然发现kafka的几个小细节 | M78星云档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">M78星云档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">存放第七空间的所有档案</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/23/突然发现kafka的几个小细节/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="M78星云档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">突然发现kafka的几个小细节</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T21:56:00+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-kafka生产数据时的分组策略"><a href="#1-kafka生产数据时的分组策略" class="headerlink" title="1.  kafka生产数据时的分组策略"></a>1.  kafka生产数据时的分组策略</h2><pre><code>默认是defaultPartition Utils.abs(key.hashCode)%numPartitions
+key是在发送数据时传入的（proder.send（Keyedmessage（topic，myPartionKey，messAge））），
+</code></pre><h2 id="2-kafka如何保证数据的完全生产"><a href="#2-kafka如何保证数据的完全生产" class="headerlink" title="2. kafka如何保证数据的完全生产"></a>2. kafka如何保证数据的完全生产</h2><pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  ack机制，broker表示发来的数据已确认无误，表示数据已保存内存或磁盘</span><br><span class="line"> 0 不等待block返回确认消息 </span><br><span class="line">-1 等待topic中的某个 partition leader保存成功的状态反馈</span><br><span class="line"> 1 等待topic中的某个 partition 所有副本都保存成功的反馈</span><br></pre></td></tr></table></figure>
+</code></pre><h2 id="3-broker如何保存数据"><a href="#3-broker如何保存数据" class="headerlink" title="3. broker如何保存数据"></a>3. broker如何保存数据</h2><h3 id="在理论环境下，-broker-按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的-partition-，-partition是一个磁盘目录中有多个segment集合（index，log）"><a href="#在理论环境下，-broker-按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的-partition-，-partition是一个磁盘目录中有多个segment集合（index，log）" class="headerlink" title="在理论环境下， broker 按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的 partition ， partition是一个磁盘目录中有多个segment集合（index，log）"></a>在理论环境下， broker 按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的 partition ， partition是一个磁盘目录中有多个segment集合（index，log）</h3><h2 id="4-consumer和partition之间如何做负载均衡"><a href="#4-consumer和partition之间如何做负载均衡" class="headerlink" title="4. consumer和partition之间如何做负载均衡"></a>4. consumer和partition之间如何做负载均衡</h2><p>  ###最好是一一对应， 一个 partition 对应一个 consumer 如果consumer的数量过多，就会产生空闲的consumer<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">算法：</span><br><span class="line">有topic1, partitions :p0,p1,p2,p3</span><br><span class="line">加入group中，有如下consumer:c1,c2</span><br><span class="line">首先根据partition索引号对 partitions排序和根据 consumer.id排序</span><br><span class="line">计算倍数：M = [p0,p1,p2,p3].size/[c1,c2].size 结果值</span><br><span class="line">然后依次分配 partitions：c1 = [p0,p1],c2=[p2,p3] 即Ci = [p(i*M),p((i+1)*M-1)]</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-如何保证kafka消费者消费数据时全局有序的"><a href="#5-如何保证kafka消费者消费数据时全局有序的" class="headerlink" title="5. 如何保证kafka消费者消费数据时全局有序的"></a>5. 如何保证kafka消费者消费数据时全局有序的</h2><h3 id="保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个-生产者-和-一个-partition-一个消费者。这种场景和大数据相悖。"><a href="#保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个-生产者-和-一个-partition-一个消费者。这种场景和大数据相悖。" class="headerlink" title="保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个 生产者 和 一个 partition , 一个消费者。这种场景和大数据相悖。"></a>保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个 生产者 和 一个 partition , 一个消费者。这种场景和大数据相悖。</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kafka/" rel="tag"># kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/22/kafka理解和安装/" rel="next" title="kafka理解和安装">
+                <i class="fa fa-chevron-left"></i> kafka理解和安装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/24/Storm提交任务的细节/" rel="prev" title="Storm提交任务的细节">
+                Storm提交任务的细节 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gy</p>
+              <p class="site-description motion-element" itemprop="description">我是泰罗！对不起！泰罗</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-kafka生产数据时的分组策略"><span class="nav-number">1.</span> <span class="nav-text">1.  kafka生产数据时的分组策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-kafka如何保证数据的完全生产"><span class="nav-number">2.</span> <span class="nav-text">2. kafka如何保证数据的完全生产</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-broker如何保存数据"><span class="nav-number">3.</span> <span class="nav-text">3. broker如何保存数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在理论环境下，-broker-按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的-partition-，-partition是一个磁盘目录中有多个segment集合（index，log）"><span class="nav-number">3.1.</span> <span class="nav-text">在理论环境下， broker 按照顺序读写的机制，可以每秒保存600M的数据（PageCache机制：PageCache本质就是把尽可能多的空闲内存当磁盘缓存来用）当前topic所属的broker上，必定有一个该topic的 partition ， partition是一个磁盘目录中有多个segment集合（index，log）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-consumer和partition之间如何做负载均衡"><span class="nav-number">4.</span> <span class="nav-text">4. consumer和partition之间如何做负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-如何保证kafka消费者消费数据时全局有序的"><span class="nav-number">5.</span> <span class="nav-text">5. 如何保证kafka消费者消费数据时全局有序的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个-生产者-和-一个-partition-一个消费者。这种场景和大数据相悖。"><span class="nav-number">5.1.</span> <span class="nav-text">保证不了，因为如果要全局有序，必须保证生产有序，存储有序，消费有序。有序，生产做集群，存储分片，消费设置为一个consumerGroup，要保证全局有序，就需要保证每个环节都有序只有一种可能就是只有一个 生产者 和 一个 partition , 一个消费者。这种场景和大数据相悖。</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

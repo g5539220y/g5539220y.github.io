@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="storm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Storm的几个重要概念：1. Datasource：外部数据源2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上4. Tuple：一次消息传递的基本单元（一个">
+<meta name="keywords" content="storm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对storm的理解和一些细节的说明">
+<meta property="og:url" content="http://yoursite.com/2018/02/10/对storm的理解和一些细节的说明/index.html">
+<meta property="og:site_name" content="M78星云档案库">
+<meta property="og:description" content="Storm的几个重要概念：1. Datasource：外部数据源2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上4. Tuple：一次消息传递的基本单元（一个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-23T15:28:48.557Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对storm的理解和一些细节的说明">
+<meta name="twitter:description" content="Storm的几个重要概念：1. Datasource：外部数据源2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上4. Tuple：一次消息传递的基本单元（一个">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/10/对storm的理解和一些细节的说明/"/>
+
+
+
+
+
+  <title>对storm的理解和一些细节的说明 | M78星云档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">M78星云档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">存放第七空间的所有档案</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/10/对storm的理解和一些细节的说明/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="M78星云档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">对storm的理解和一些细节的说明</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T22:06:00+08:00">
+                2018-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Storm的几个重要概念："><a href="#Storm的几个重要概念：" class="headerlink" title="Storm的几个重要概念："></a>Storm的几个重要概念：</h2><h3 id="1-Datasource：外部数据源"><a href="#1-Datasource：外部数据源" class="headerlink" title="1. Datasource：外部数据源"></a>1. Datasource：外部数据源</h3><h3 id="2-Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt"><a href="#2-Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt" class="headerlink" title="2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt"></a>2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt</h3><h3 id="3-Bolt：接收Spout-或上游的bolt发送的数据-发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上"><a href="#3-Bolt：接收Spout-或上游的bolt发送的数据-发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上" class="headerlink" title="3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上"></a>3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上</h3><h3 id="4-Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据"><a href="#4-Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据" class="headerlink" title="4. Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据"></a>4. Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据</h3><h3 id="5-StreamGrouping：数据分组策略（hadoop中的hashcode-num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区"><a href="#5-StreamGrouping：数据分组策略（hadoop中的hashcode-num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区" class="headerlink" title="5. StreamGrouping：数据分组策略（hadoop中的hashcode%num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区"></a>5. StreamGrouping：数据分组策略（hadoop中的hashcode%num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区</h3><hr>
+<h2 id="常用几种StreamGrouping（一共七种）："><a href="#常用几种StreamGrouping（一共七种）：" class="headerlink" title="常用几种StreamGrouping（一共七种）："></a>常用几种StreamGrouping（一共七种）：</h2><h4 id="1-shuffle-Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non-Grouping（不分组）类似-分组通过Random随机函数"><a href="#1-shuffle-Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non-Grouping（不分组）类似-分组通过Random随机函数" class="headerlink" title="1. shuffle Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non Grouping（不分组）类似 分组通过Random随机函数"></a>1. shuffle Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non Grouping（不分组）类似 分组通过Random随机函数</h4><h4 id="2-Fields-Grouping：按照字段分组-按照id和其他type分组。同样的id进入到同样的bolt-hashcode-num"><a href="#2-Fields-Grouping：按照字段分组-按照id和其他type分组。同样的id进入到同样的bolt-hashcode-num" class="headerlink" title="2. Fields Grouping：按照字段分组 按照id和其他type分组。同样的id进入到同样的bolt   hashcode%num"></a>2. Fields Grouping：按照字段分组 按照id和其他type分组。同样的id进入到同样的bolt   hashcode%num</h4><h4 id="3-All-Grouping：把Tuple广播-所有bolt都会收到"><a href="#3-All-Grouping：把Tuple广播-所有bolt都会收到" class="headerlink" title="3. All Grouping：把Tuple广播 所有bolt都会收到"></a>3. All Grouping：把Tuple广播 所有bolt都会收到</h4><h4 id="4-Local-or-shuffle-Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle）-避免网络传输"><a href="#4-Local-or-shuffle-Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle）-避免网络传输" class="headerlink" title="4. Local or shuffle Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle） 避免网络传输"></a>4. Local or shuffle Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle） 避免网络传输</h4><hr>
+<h2 id="并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上"><a href="#并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上" class="headerlink" title="并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上"></a>并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上</h2><hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   有一种类似于平均算法的负载均衡策略。</span><br><span class="line">（尽可能减少网络IO传输和mr中程序的map方法</span><br><span class="line">尽量运行在数据所在节点的道理是一样的）</span><br></pre></td></tr></table></figure>
+<h2 id="一个简单的Topology的工作流程"><a href="#一个简单的Topology的工作流程" class="headerlink" title="一个简单的Topology的工作流程"></a>一个简单的Topology的工作流程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Topology1：</span><br><span class="line">-&gt;Spout获取外部一条一条的数据（String、json、javabean）</span><br><span class="line">-&gt;Spout在内部发送给Bolt（bolt进行业务处理）</span><br><span class="line">-&gt;内部有好多bolt进行业务步骤1.。2.。。3.这些bolt平行处理</span><br><span class="line">-&gt;bolt处理后将结果数据保存到Redis</span><br></pre></td></tr></table></figure>
+<h2 id="几个重要的点"><a href="#几个重要的点" class="headerlink" title="几个重要的点"></a>几个重要的点</h2><h3 id="1-一个storm可以获取多个数据源"><a href="#1-一个storm可以获取多个数据源" class="headerlink" title="1. 一个storm可以获取多个数据源"></a>1. 一个storm可以获取多个数据源</h3><h3 id="2-每个-Topology-之间不能共享数据"><a href="#2-每个-Topology-之间不能共享数据" class="headerlink" title="2. 每个 Topology 之间不能共享数据"></a>2. 每个 Topology 之间不能共享数据</h3><h3 id="3-一个-Topology的数据是自己独有的"><a href="#3-一个-Topology的数据是自己独有的" class="headerlink" title="3. 一个 Topology的数据是自己独有的"></a>3. 一个 Topology的数据是自己独有的</h3><h3 id="4-和其他-Topology没有关系"><a href="#4-和其他-Topology没有关系" class="headerlink" title="4. 和其他 Topology没有关系"></a>4. 和其他 Topology没有关系</h3><hr>
+<h2 id="storm内部架构："><a href="#storm内部架构：" class="headerlink" title="storm内部架构："></a>storm内部架构：</h2><ul>
+<li><h4 id="nimbus：任务分配，通过zookeeper和supervisor传送任务信息"><a href="#nimbus：任务分配，通过zookeeper和supervisor传送任务信息" class="headerlink" title="nimbus：任务分配，通过zookeeper和supervisor传送任务信息"></a>nimbus：任务分配，通过zookeeper和supervisor传送任务信息</h4></li>
+<li><h4 id="supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker"><a href="#supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker" class="headerlink" title="supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker"></a>supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker</h4></li>
+<li><h4 id="worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。"><a href="#worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。" class="headerlink" title="worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。"></a>worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。</h4></li>
+<li><h4 id="Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0-8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor-thread-task"><a href="#Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0-8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor-thread-task" class="headerlink" title="Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0.8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor=thread=task"></a>Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0.8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor=thread=task</h4></li>
+<li><h4 id="zookeeper：保存任务分配、心跳信息。"><a href="#zookeeper：保存任务分配、心跳信息。" class="headerlink" title="zookeeper：保存任务分配、心跳信息。"></a>zookeeper：保存任务分配、心跳信息。</h4></li>
+<li><h4 id="一台物理机可以起多个worker-数量跟物理配置、端口号有关"><a href="#一台物理机可以起多个worker-数量跟物理配置、端口号有关" class="headerlink" title="一台物理机可以起多个worker 数量跟物理配置、端口号有关"></a>一台物理机可以起多个worker 数量跟物理配置、端口号有关</h4></li>
+<li><h4 id="一个worker占用一个端口号"><a href="#一个worker占用一个端口号" class="headerlink" title="一个worker占用一个端口号"></a>一个worker占用一个端口号</h4></li>
+</ul>
+<h2 id="worker与topology"><a href="#worker与topology" class="headerlink" title="worker与topology"></a>worker与topology</h2><pre><code>一个worker只属于一个topology（和它共存亡）
+一个topology要求的worker数量不足时，
+集群在任务分配根据现有的worker数量先运行topology，
+如果当前中的worker数量为0 
+那么新提交的topology只会标识为active 不会运行。当有空闲的资源才运行 
+</code></pre><h2 id="storm也有两种运行模式：集群。本地（在当前ide中运行）"><a href="#storm也有两种运行模式：集群。本地（在当前ide中运行）" class="headerlink" title="storm也有两种运行模式：集群。本地（在当前ide中运行）"></a>storm也有两种运行模式：集群。本地（在当前ide中运行）</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/storm/" rel="tag"># storm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/07/Spark的几个高级算子/" rel="next" title="Spark的几个高级算子">
+                <i class="fa fa-chevron-left"></i> Spark的几个高级算子
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/11/scala 高级特型和隐式转换/" rel="prev" title="scala 高级特型和隐式转换">
+                scala 高级特型和隐式转换 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Gy</p>
+              <p class="site-description motion-element" itemprop="description">我是泰罗！对不起！泰罗</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Storm的几个重要概念："><span class="nav-number">1.</span> <span class="nav-text">Storm的几个重要概念：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Datasource：外部数据源"><span class="nav-number">1.1.</span> <span class="nav-text">1. Datasource：外部数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt"><span class="nav-number">1.2.</span> <span class="nav-text">2. Spout：获取外部数据源，将外部数据源转化成storm内部数据，以Tuple为基本的传输单元发给Bolt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Bolt：接收Spout-或上游的bolt发送的数据-发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上"><span class="nav-number">1.3.</span> <span class="nav-text">3. Bolt：接收Spout(或上游的bolt发送的数据)发送的数据，进行业务逻辑处理节点。可以有多个。处理后发送给下一个bolt或者存储到某种介质（mysql、Redis）上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据"><span class="nav-number">1.4.</span> <span class="nav-text">4. Tuple：一次消息传递的基本单元（一个对象，封装一个List）用来保存数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-StreamGrouping：数据分组策略（hadoop中的hashcode-num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区"><span class="nav-number">1.5.</span> <span class="nav-text">5. StreamGrouping：数据分组策略（hadoop中的hashcode%num）Spout在给bolt发送Tuple时对Bolt有一个StreamGrouping，对Bolt进行分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用几种StreamGrouping（一共七种）："><span class="nav-number">2.</span> <span class="nav-text">常用几种StreamGrouping（一共七种）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-shuffle-Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non-Grouping（不分组）类似-分组通过Random随机函数"><span class="nav-number">2.0.1.</span> <span class="nav-text">1. shuffle Grouping：随机分组，随机发stream里面的Tuple给bolt，保证每个bolt里的tuple大致相同。这类分组方式的结果与Non Grouping（不分组）类似 分组通过Random随机函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Fields-Grouping：按照字段分组-按照id和其他type分组。同样的id进入到同样的bolt-hashcode-num"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. Fields Grouping：按照字段分组 按照id和其他type分组。同样的id进入到同样的bolt   hashcode%num</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-All-Grouping：把Tuple广播-所有bolt都会收到"><span class="nav-number">2.0.3.</span> <span class="nav-text">3. All Grouping：把Tuple广播 所有bolt都会收到</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Local-or-shuffle-Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle）-避免网络传输"><span class="nav-number">2.0.4.</span> <span class="nav-text">4. Local or shuffle Grouping：Spout优先把Tuple发给自己本地机器上的bolt（自己在本地发采用shuffle） 避免网络传输</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上"><span class="nav-number">3.</span> <span class="nav-text">并发度：用户指定的一种类型的任务（定义的Spout要干什么工作）被几个线程同时执行。并发度是多少就是线程的数量。一个任务的多个线程，会被运行在多个worker（JVM）上</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个简单的Topology的工作流程"><span class="nav-number">4.</span> <span class="nav-text">一个简单的Topology的工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几个重要的点"><span class="nav-number">5.</span> <span class="nav-text">几个重要的点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-一个storm可以获取多个数据源"><span class="nav-number">5.1.</span> <span class="nav-text">1. 一个storm可以获取多个数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-每个-Topology-之间不能共享数据"><span class="nav-number">5.2.</span> <span class="nav-text">2. 每个 Topology 之间不能共享数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-一个-Topology的数据是自己独有的"><span class="nav-number">5.3.</span> <span class="nav-text">3. 一个 Topology的数据是自己独有的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-和其他-Topology没有关系"><span class="nav-number">5.4.</span> <span class="nav-text">4. 和其他 Topology没有关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#storm内部架构："><span class="nav-number">6.</span> <span class="nav-text">storm内部架构：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nimbus：任务分配，通过zookeeper和supervisor传送任务信息"><span class="nav-number">6.0.1.</span> <span class="nav-text">nimbus：任务分配，通过zookeeper和supervisor传送任务信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker"><span class="nav-number">6.0.2.</span> <span class="nav-text">supervisor：当前物理机上的管理，负责接收nimbus分配的任务，收到任务，启动worker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。"><span class="nav-number">6.0.3.</span> <span class="nav-text">worker：执行具体任务的组件。任务类型：Spout、bolt。可以同时存在多个Spout、bolt任务。启动一个exector线程。其实就是一个JVM。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0-8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor-thread-task"><span class="nav-number">6.0.4.</span> <span class="nav-text">Task（本质上是一个线程）：worker每一个Spout、bolt的线程成为一个task。每个Task属于某个组件并发度中的一个。strom0.8以后task的线程不与物理线程同步，即一个exector可以有多个Task。但在默认情况下：executor=thread=task</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#zookeeper：保存任务分配、心跳信息。"><span class="nav-number">6.0.5.</span> <span class="nav-text">zookeeper：保存任务分配、心跳信息。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一台物理机可以起多个worker-数量跟物理配置、端口号有关"><span class="nav-number">6.0.6.</span> <span class="nav-text">一台物理机可以起多个worker 数量跟物理配置、端口号有关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一个worker占用一个端口号"><span class="nav-number">6.0.7.</span> <span class="nav-text">一个worker占用一个端口号</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#worker与topology"><span class="nav-number">7.</span> <span class="nav-text">worker与topology</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#storm也有两种运行模式：集群。本地（在当前ide中运行）"><span class="nav-number">8.</span> <span class="nav-text">storm也有两种运行模式：集群。本地（在当前ide中运行）</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
