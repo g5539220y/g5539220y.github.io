@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推荐系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据集在一切开始之前。必须先熟悉数据集。MovieLens数据集：有三个文件是非常重要的 u-item:这里记录了所有电影的信息。包括电影流派特征的二进制向量，部分数据是这样的：  1234563|Santa Clause, The (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Santa%20Clause,%20The%20(1994)">
+<meta name="keywords" content="推荐系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的">
+<meta property="og:url" content="http://yoursite.com/2018/05/20/人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的/index.html">
+<meta property="og:site_name" content="giao哥的档案库">
+<meta property="og:description" content="数据集在一切开始之前。必须先熟悉数据集。MovieLens数据集：有三个文件是非常重要的 u-item:这里记录了所有电影的信息。包括电影流派特征的二进制向量，部分数据是这样的：  1234563|Santa Clause, The (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Santa%20Clause,%20The%20(1994)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-20T05:48:12.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的">
+<meta name="twitter:description" content="数据集在一切开始之前。必须先熟悉数据集。MovieLens数据集：有三个文件是非常重要的 u-item:这里记录了所有电影的信息。包括电影流派特征的二进制向量，部分数据是这样的：  1234563|Santa Clause, The (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Santa%20Clause,%20The%20(1994)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/20/人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的/"/>
+
+
+
+
+
+  <title>人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的 | giao哥的档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">giao哥的档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/20/人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="giao哥的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">人工智障录---基于电影本体和协同过滤的推荐系统是怎么giao出来的</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-20T13:48:00+08:00">
+                2018-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h1><h2 id="在一切开始之前。必须先熟悉数据集。"><a href="#在一切开始之前。必须先熟悉数据集。" class="headerlink" title="在一切开始之前。必须先熟悉数据集。"></a>在一切开始之前。必须先熟悉数据集。</h2><h3 id="MovieLens数据集："><a href="#MovieLens数据集：" class="headerlink" title="MovieLens数据集："></a>MovieLens数据集：</h3><h4 id="有三个文件是非常重要的"><a href="#有三个文件是非常重要的" class="headerlink" title="有三个文件是非常重要的"></a>有三个文件是非常重要的</h4><ul>
+<li>u-item:这里记录了所有电影的信息。包括电影流派特征的二进制向量，部分数据是这样的：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">63|Santa Clause, The (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Santa%20Clause,%20The%20(1994)|0|0|0|0|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0</span><br><span class="line">64|Shawshank Redemption, The (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Shawshank%20Redemption,%20The%20(1994)|0|0|0|0|0|0|0|0|1|0|0|0|0|0|0|0|0|0|0</span><br><span class="line">65|What&apos;s Eating Gilbert Grape (1993)|01-Jan-1993||http://us.imdb.com/M/title-exact?What&apos;s%20Eating%20Gilbert%20Grape%20(1993)|0|0|0|0|0|1|0|0|1|0|0|0|0|0|0|0|0|0|0</span><br><span class="line">66|While You Were Sleeping (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?While%20You%20Were%20Sleeping%20(1995)|0|0|0|0|0|1|0|0|0|0|0|0|0|0|1|0|0|0|0</span><br><span class="line">67|Ace Ventura: Pet Detective (1994)|01-Jan-1994||http://us.imdb.com/M/title-exact?Ace%20Ventura:%20Pet%20Detective%20(1994)|0|0|0|0|0|1|0|0|0|0|0|0|0|0|0|0|0|0|0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>u-data:核心的数据，主要是 [用户ID 电影ID 该用户对该电影的评分 时间戳] 组成,时间戳基本没用，部分数据是这样的：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">196    242	3	881250949</span><br><span class="line">186	302	3	891717742</span><br><span class="line">22	377	1	878887116</span><br><span class="line">244	51	2	880606923</span><br><span class="line">166	346	1	886397596</span><br><span class="line">298	474	4	884182806</span><br><span class="line">115	265	2	881171488</span><br></pre></td></tr></table></figure>
+<ul>
+<li>u-user:用户的信息数据，主要是[用户ID 年龄 性别 职业 邮编] 用来做人口统计的主要数据：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1|24|M|technician|85711</span><br><span class="line">2|53|F|other|94043</span><br><span class="line">3|23|M|writer|55106</span><br><span class="line">4|24|M|technician|43537</span><br><span class="line">5|33|F|other|15213</span><br><span class="line">6|42|M|executive|98101</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="大前提–通过u-item文件求出电影的相似度矩阵"><a href="#大前提–通过u-item文件求出电影的相似度矩阵" class="headerlink" title="大前提–通过u-item文件求出电影的相似度矩阵"></a>大前提–通过u-item文件求出电影的相似度矩阵</h1><p>##　第一步！～清洗数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">str_movie = open(&quot;D:\GyDevelopData\pycharsWorkspace\spiderman\data_res\u.item&quot;,&quot;r+&quot;)</span><br><span class="line">list_matrix =[]</span><br><span class="line">for line in str_movie.readlines():</span><br><span class="line">    list_num=[]</span><br><span class="line">    matreix = line.strip(&apos;\n&apos;)</span><br><span class="line">    fields = matreix.split(&quot;|&quot;)</span><br><span class="line">    for i in range(5,fields.__len__(),1):</span><br><span class="line">        list_num.append(int(fields[i]))</span><br><span class="line">    list_matrix.append(list_num)</span><br><span class="line">np_list = np.array(list_matrix)</span><br></pre></td></tr></table></figure></p>
+<p>这一步主要是把每部电影的流派特征的二进制向量洗出来存在一个由numpy生成的特征矩阵里</p>
+<p>##　第二步！~通过特征矩阵来求每部电影之间的相似度矩阵</p>
+<h3 id="这个矩阵是对称的，为了后续的查找"><a href="#这个矩阵是对称的，为了后续的查找" class="headerlink" title="这个矩阵是对称的，为了后续的查找"></a>这个矩阵是对称的，为了后续的查找</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">similarNum = np.zeros((m,m),dtype=float)</span><br><span class="line">def mo(mat,smat,n):</span><br><span class="line">   for i in range(0,n,1):</span><br><span class="line">     for j in range(i+1,n,1):</span><br><span class="line">       Q11 = 0</span><br><span class="line">       Q01 = 0</span><br><span class="line">       Q10 = 0</span><br><span class="line">       for m in range(19):</span><br><span class="line">         if mat[i,m]==mat[j,m] &amp; mat[i,m] == 1:</span><br><span class="line">            Q11 += 1</span><br><span class="line">         elif (mat[i,m] != mat[j,m]) &amp;  mat[i,m] == 1:</span><br><span class="line">            Q10 += 1</span><br><span class="line">         elif (mat[i,m] != mat[j,m]) &amp;  mat[j,m] == 1:</span><br><span class="line">            Q01 += 1</span><br><span class="line">         else :continue</span><br><span class="line">       smat[i][j] = (format(float(Q11)/float((Q11+Q01+Q10)),&apos;.2f&apos;))</span><br><span class="line">       smat[j][i] = (format(float(Q11)/float((Q11+Q01+Q10)),&apos;.2f&apos;))</span><br></pre></td></tr></table></figure>
+<p>先用numpy生成了一个全是0的矩阵，然后通过计算再往里面添加数据。具体的计算方法就是老外那个语义相似度的求法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.save(&quot;D:\Desktop\g.npy&quot;,similarNum)</span><br></pre></td></tr></table></figure></p>
+<p>最后把相似度矩阵存在npy文件里，这样numpy就能直接读了。速度非常快，这个矩阵就是整个推荐系统的核心所在</p>
+<h1 id="开始干活！推荐算法实现"><a href="#开始干活！推荐算法实现" class="headerlink" title="开始干活！推荐算法实现"></a>开始干活！推荐算法实现</h1><h2 id="根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构"><a href="#根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构" class="headerlink" title="根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构"></a>根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构</h2><h3 id="求余弦："><a href="#求余弦：" class="headerlink" title="* 求余弦："></a>* 求余弦：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def getCosDist(user1, user2):</span><br><span class="line">    sum_x = 0.0</span><br><span class="line">    sum_y = 0.0</span><br><span class="line">    sum_xy = 0.0</span><br><span class="line">    for key1 in user1:</span><br><span class="line">        for key2 in user2:</span><br><span class="line">            if key1[0] == key2[0]:</span><br><span class="line">                sum_x += key1[1] * key1[1]</span><br><span class="line">                sum_y += key2[1] * key2[1]</span><br><span class="line">                sum_xy += key1[1] * key2[1]</span><br><span class="line">    if sum_xy == 0.0:</span><br><span class="line">        return 0</span><br><span class="line">    demo = math.sqrt(sum_x * sum_y)</span><br><span class="line">    return sum_xy / demo</span><br></pre></td></tr></table></figure>
+<p>为啥要求余弦。因为余弦距离，也称为余弦相似度，是用向量空间中两个向量夹角的余弦值作为衡量两个个体间差异的大小的度量。这个度量更注重于两个个体的近似度，不是距离和长度的度量。相对准点，要不用皮尔森求也行</p>
+<h3 id="特征工程-数据的清洗和特征的提取："><a href="#特征工程-数据的清洗和特征的提取：" class="headerlink" title="* [特征工程]数据的清洗和特征的提取："></a>* [特征工程]数据的清洗和特征的提取：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">def getRatingInfo(ratings):</span><br><span class="line">    rates = []</span><br><span class="line">    for line in ratings:</span><br><span class="line">        rate = line.split(&quot;\t&quot;)</span><br><span class="line">        rates.append([int(rate[0]), int(rate[1]), int(rate[2])])</span><br><span class="line">    return rates</span><br><span class="line"></span><br><span class="line">def getUserScoreDataStructure(rates):</span><br><span class="line">    userDict = &#123;&#125;</span><br><span class="line">    itemUser = &#123;&#125;</span><br><span class="line">    for k in rates:</span><br><span class="line">        user_rank = (k[1], k[2])</span><br><span class="line">        if k[0] in userDict:</span><br><span class="line">            userDict[k[0]].append(user_rank)</span><br><span class="line">        else:</span><br><span class="line">            userDict[k[0]] = [user_rank]</span><br><span class="line">        if k[1] in itemUser:</span><br><span class="line">            itemUser[k[1]].append(k[0])</span><br><span class="line">        else:</span><br><span class="line">            itemUser[k[1]] = [k[0]]</span><br><span class="line">    return userDict, itemUser</span><br></pre></td></tr></table></figure>
+<h4 id="第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里"><a href="#第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里" class="headerlink" title="第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里"></a>第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里</h4><h4 id="第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是-用户ID：-电影ID-评分-，。。。-就是说这个人都看过啥电影并多少评分，itemUser的格式是-电影ID-用户ID，。。。-就是这个电影都被谁看过"><a href="#第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是-用户ID：-电影ID-评分-，。。。-就是说这个人都看过啥电影并多少评分，itemUser的格式是-电影ID-用户ID，。。。-就是这个电影都被谁看过" class="headerlink" title="第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是[用户ID：(电影ID,评分)，。。。]就是说这个人都看过啥电影并多少评分，itemUser的格式是[电影ID:(用户ID，。。。)]就是这个电影都被谁看过"></a>第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是[用户ID：(电影ID,评分)，。。。]就是说这个人都看过啥电影并多少评分，itemUser的格式是[电影ID:(用户ID，。。。)]就是这个电影都被谁看过</h4><h3 id="找邻居–求用户与用户之间的相似度："><a href="#找邻居–求用户与用户之间的相似度：" class="headerlink" title="找邻居–求用户与用户之间的相似度："></a>找邻居–求用户与用户之间的相似度：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def getnneighbor(userId, userDict, itemUser):</span><br><span class="line">    neighbors = []</span><br><span class="line">    for item in userDict[userId]:  #先按这个人看的电影找</span><br><span class="line">        for neighbor in itemUser[item[0]]:  #看谁跟他看的电影一样</span><br><span class="line">            if neighbor != userId and neighbor not in neighbors: #如果不是他自己就放在邻居列表里</span><br><span class="line">                neighbors.append(neighbor)   #邻居的列表</span><br><span class="line">    neighbors_dist = []</span><br><span class="line">    for neighbor in neighbors:</span><br><span class="line">        dist = getCosDist(userDict[userId], userDict[neighbor]) #通过这个人和他邻居对这个电影的打分来求相似度</span><br><span class="line">        neighbors_dist.append([dist, neighbor]) #存到格式为[(相似度,邻居)]的列表中</span><br><span class="line">    neighbors_dist.sort(reverse = True) #排个序</span><br><span class="line">    return neighbors_dist #返回</span><br></pre></td></tr></table></figure>
+<h4 id="通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。"><a href="#通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。" class="headerlink" title="通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。"></a>通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。</h4><h3 id="解决冷启动–基于人口普查求用户的特征："><a href="#解决冷启动–基于人口普查求用户的特征：" class="headerlink" title="解决冷启动–基于人口普查求用户的特征："></a>解决冷启动–基于人口普查求用户的特征：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">np.set_printoptions(threshold=&apos;nan&apos;)</span><br><span class="line">zhiY = open(&quot;D:\GyDevelopData\pycharsWorkspace\spiderman\data_res\u.user&quot;,&quot;r+&quot;)</span><br><span class="line">occup = open(&quot;D:\GyDevelopData\pycharsWorkspace\spiderman\data_res\u.occupation&quot;,&quot;r+&quot;)</span><br><span class="line">Matrix_per = np.zeros((943,4),dtype=float)</span><br><span class="line">occ =&#123;&#125;</span><br><span class="line">sex = &#123;&#125;</span><br><span class="line">h = 1</span><br><span class="line">n = 0</span><br><span class="line">for i in occup.readlines():</span><br><span class="line">    i = i.strip(&quot;\n&quot;)</span><br><span class="line">    occ[i] = h</span><br><span class="line">    h = h+1</span><br><span class="line">sex[&quot;M&quot;] = 1</span><br><span class="line">sex[&quot;F&quot;] = 0</span><br><span class="line">for str in zhiY.readlines():</span><br><span class="line">    field = str.split(&quot;|&quot;)</span><br><span class="line">    m = 0</span><br><span class="line">    if float(field[1])&lt;=18:</span><br><span class="line">        Matrix_per[n][m] = 1</span><br><span class="line">    elif float(field[1])&gt;=18 and float(field[1])&lt;=24:</span><br><span class="line">        Matrix_per[n][m] = 2</span><br><span class="line">    elif float(field[1])&gt;=25 and float(field[1])&lt;=34:</span><br><span class="line">        Matrix_per[n][m] = 3</span><br><span class="line">    elif float(field[1])&gt;=35 and float(field[1])&lt;=44:</span><br><span class="line">        Matrix_per[n][m] = 4</span><br><span class="line">    elif float(field[1])&gt;=45 and float(field[1])&lt;=54:</span><br><span class="line">        Matrix_per[n][m] = 5</span><br><span class="line">    elif float(field[1])&gt;=54:</span><br><span class="line">        Matrix_per[n][m] = 6</span><br><span class="line">    m = m+1</span><br><span class="line">    Matrix_per[n][m] = sex[field[2]]</span><br><span class="line">    m= m+1</span><br><span class="line">    Matrix_per[n][m] = occ[field[3]]</span><br><span class="line">    m = m + 1</span><br><span class="line">    gb = field[4].strip()</span><br><span class="line">    Matrix_per[n][m] = gb[0:3]</span><br><span class="line">    n = n + 1</span><br><span class="line">print max(Matrix_per[:,0])-min(Matrix_per[:,0])</span><br><span class="line">print Matrix_per</span><br></pre></td></tr></table></figure>
+<h4 id="这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述"><a href="#这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述" class="headerlink" title="这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述"></a>这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述</h4><h3 id="核心–我的推荐算法的实现："><a href="#核心–我的推荐算法的实现：" class="headerlink" title="核心–我的推荐算法的实现："></a>核心–我的推荐算法的实现：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def GyJiuShiNB(Similarity_matrix,filename, userId):</span><br><span class="line">    contents = readFile(filename)</span><br><span class="line">    rates = getRatingInfo(contents)</span><br><span class="line">    userDict, itemUser = getUserScoreDataStructure(rates)</span><br><span class="line">    neighbors = getnneighbor(userId, userDict, itemUser)[:10]</span><br><span class="line">    Mo_recommand = &#123;&#125;</span><br><span class="line">    for neighbor_mo in neighbors:</span><br><span class="line">        #相似度前5的邻居</span><br><span class="line">        templ=[]</span><br><span class="line">        MoaMovie = userDict[neighbor_mo[1]]</span><br><span class="line">        MoaMovie.sort(key=lambda x:x[1],reverse=True)</span><br><span class="line">        #把邻居看过5部评分最高的放在MoaMovie</span><br><span class="line">        for i in range(5):</span><br><span class="line">          templ.append(np.argsort(-Similarity_matrix[MoaMovie[i][0]])[i])</span><br><span class="line">        Mo_recommand[neighbor_mo[1]]=templ</span><br><span class="line">        #Mo_recommand 最终格式 [邻居:[相似度最高的5部电影]]</span><br><span class="line">    recommand_list = []</span><br><span class="line">    for key in Mo_recommand:</span><br><span class="line">        recommand_list.append([Mo_recommand[key][random.randint(0,4)], key])</span><br><span class="line">    return [k[0] for k in recommand_list],itemUser, neighbors</span><br></pre></td></tr></table></figure>
+<h4 id="通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度"><a href="#通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度" class="headerlink" title="通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度"></a>通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度</h4><hr>
+<h2 id="总体过程就是"><a href="#总体过程就是" class="headerlink" title="总体过程就是"></a>总体过程就是</h2><ul>
+<li>先从数据中提取[电影-用户] 这样的数据结构，查找这一部电影都被谁看过</li>
+<li>遍历推荐目标之前看过的每一部电影</li>
+<li>寻找和推荐目标之前有共同看过的电影的所有用户作为邻居，并求出邻居相似度</li>
+<li>找出相似度最高的K个邻居，取出其评分最高的M个电影，再找出与这M部电影相似度最大的N部，然后推荐给用户</li>
+<li>如果目标用户从未注册过，即冷启动，那么通过人口普查的方式求得与推荐目标相似度最大的用户，相似度与求电影流派基本相同。</li>
+</ul>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐系统/" rel="tag"># 推荐系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/24/Spark-当启用了一个WordCount的时候，都发生了什么奇妙的事？/" rel="next" title="Spark-当启用了一个WordCount的时候，都发生了什么奇妙的事？">
+                <i class="fa fa-chevron-left"></i> Spark-当启用了一个WordCount的时候，都发生了什么奇妙的事？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">源</p>
+              <p class="site-description motion-element" itemprop="description">ok！~我立giaogiao</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据集"><span class="nav-number">1.</span> <span class="nav-text">数据集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#在一切开始之前。必须先熟悉数据集。"><span class="nav-number">1.1.</span> <span class="nav-text">在一切开始之前。必须先熟悉数据集。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MovieLens数据集："><span class="nav-number">1.1.1.</span> <span class="nav-text">MovieLens数据集：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有三个文件是非常重要的"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">有三个文件是非常重要的</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大前提–通过u-item文件求出电影的相似度矩阵"><span class="nav-number">2.</span> <span class="nav-text">大前提–通过u-item文件求出电影的相似度矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#这个矩阵是对称的，为了后续的查找"><span class="nav-number">2.0.1.</span> <span class="nav-text">这个矩阵是对称的，为了后续的查找</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始干活！推荐算法实现"><span class="nav-number">3.</span> <span class="nav-text">开始干活！推荐算法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构"><span class="nav-number">3.1.</span> <span class="nav-text">根据知网上的传统协同过滤算法的描述再综合起来再把相似度矩阵加入到其中，基本上分为这几个结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#求余弦："><span class="nav-number">3.1.1.</span> <span class="nav-text">* 求余弦：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征工程-数据的清洗和特征的提取："><span class="nav-number">3.1.2.</span> <span class="nav-text">* [特征工程]数据的清洗和特征的提取：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">第一个方法就是单纯的清洗数据，把u-data中除了时间戳的数据都清洗出来放到一个列表里</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是-用户ID：-电影ID-评分-，。。。-就是说这个人都看过啥电影并多少评分，itemUser的格式是-电影ID-用户ID，。。。-就是这个电影都被谁看过"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">第二个方法是在这个列表中进行特征提取，提取出userDict和itemUser，userDict的格式是[用户ID：(电影ID,评分)，。。。]就是说这个人都看过啥电影并多少评分，itemUser的格式是[电影ID:(用户ID，。。。)]就是这个电影都被谁看过</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#找邻居–求用户与用户之间的相似度："><span class="nav-number">3.1.3.</span> <span class="nav-text">找邻居–求用户与用户之间的相似度：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。"><span class="nav-number">3.1.3.1.</span> <span class="nav-text">通过上面方法的提取，在这两个列表中通过用户与用户之间的评分的余弦值来求这两个用户的相似度，最后把这个相似度列表排个序返回。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决冷启动–基于人口普查求用户的特征："><span class="nav-number">3.1.4.</span> <span class="nav-text">解决冷启动–基于人口普查求用户的特征：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述"><span class="nav-number">3.1.4.1.</span> <span class="nav-text">这个方法我是实现自《基于用户人口统计特征与信任机制的协同推荐》里面的描述</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心–我的推荐算法的实现："><span class="nav-number">3.1.5.</span> <span class="nav-text">核心–我的推荐算法的实现：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度"><span class="nav-number">3.1.5.1.</span> <span class="nav-text">通过电影的流派来进行推荐时，可能会出现相同电影的情况，我在最后生成电影列表时加了一个伪随机，范围是M-N。这样不光解决了重复问题，还提高了推荐结果的惊喜度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总体过程就是"><span class="nav-number">3.2.</span> <span class="nav-text">总体过程就是</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">源</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

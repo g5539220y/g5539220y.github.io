@@ -79,16 +79,16 @@
 
 
 
-<meta name="description" content="我是泰罗！对不起！泰罗">
+<meta name="description" content="ok！~我立giaogiao">
 <meta property="og:type" content="website">
-<meta property="og:title" content="M78星云档案库">
+<meta property="og:title" content="giao哥的档案库">
 <meta property="og:url" content="http://yoursite.com/page/3/index.html">
-<meta property="og:site_name" content="M78星云档案库">
-<meta property="og:description" content="我是泰罗！对不起！泰罗">
+<meta property="og:site_name" content="giao哥的档案库">
+<meta property="og:description" content="ok！~我立giaogiao">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="M78星云档案库">
-<meta name="twitter:description" content="我是泰罗！对不起！泰罗">
+<meta name="twitter:title" content="giao哥的档案库">
+<meta name="twitter:description" content="ok！~我立giaogiao">
 
 
 
@@ -124,7 +124,7 @@
 
 
 
-  <title>M78星云档案库</title>
+  <title>giao哥的档案库</title>
   
 
 
@@ -155,12 +155,12 @@
     <div class="custom-logo-site-title">
       <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">M78星云档案库</span>
+        <span class="site-title">giao哥的档案库</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
       
-        <p class="site-subtitle">存放第七空间的所有档案</p>
+        <p class="site-subtitle"></p>
       
   </div>
 
@@ -232,16 +232,155 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/15/烂大街的题目----找出两个人的共同好友/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/17/知道mr程序输入的文件名以及我急中生智使用StringBuffer----利用mr程序实现的Join操作和索引文件的生成/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/17/知道mr程序输入的文件名以及我急中生智使用StringBuffer----利用mr程序实现的Join操作和索引文件的生成/" itemprop="url">知道mr程序输入的文件名以及我急中生智使用StringBuffer----利用mr程序实现的Join操作和索引文件的生成</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-17T10:18:00+08:00">
+                2017-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="程序1"><a href="#程序1" class="headerlink" title="程序1"></a>程序1</h2><h3 id="需求：利用mr程序实现sql语句中的join操作"><a href="#需求：利用mr程序实现sql语句中的join操作" class="headerlink" title="需求：利用mr程序实现sql语句中的join操作"></a>需求：利用mr程序实现sql语句中的join操作</h3><h3 id="分析：join嘛。。。就是根据相同的字段找个对应的行，然后把它们拼接到一起。逻辑很简单，但是在mr程序中会设计到两个文件所以应该map哪个文件是一个大问题。"><a href="#分析：join嘛。。。就是根据相同的字段找个对应的行，然后把它们拼接到一起。逻辑很简单，但是在mr程序中会设计到两个文件所以应该map哪个文件是一个大问题。" class="headerlink" title="分析：join嘛。。。就是根据相同的字段找个对应的行，然后把它们拼接到一起。逻辑很简单，但是在mr程序中会设计到两个文件所以应该map哪个文件是一个大问题。"></a>分析：join嘛。。。就是根据相同的字段找个对应的行，然后把它们拼接到一起。逻辑很简单，但是在mr程序中会设计到两个文件所以应该map哪个文件是一个大问题。</h3><h3 id="不知道先map哪个那就一起全map了。利用"><a href="#不知道先map哪个那就一起全map了。利用" class="headerlink" title="不知道先map哪个那就一起全map了。利用"></a>不知道先map哪个那就一起全map了。利用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FileSplit inputSplit = (FileSplit) context.getInputSplit();</span><br><span class="line">String name = inputSplit.getPath().getName();</span><br></pre></td></tr></table></figure>
+<h3 id="来获取文件夹内的文件名，然后通过"><a href="#来获取文件夹内的文件名，然后通过" class="headerlink" title="来获取文件夹内的文件名，然后通过"></a>来获取文件夹内的文件名，然后通过</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if(name.startsWith(&quot;gun&quot;))</span><br></pre></td></tr></table></figure>
+<h3 id="来根据不同文件的名字，做对应的处理。"><a href="#来根据不同文件的名字，做对应的处理。" class="headerlink" title="来根据不同文件的名字，做对应的处理。"></a>来根据不同文件的名字，做对应的处理。</h3><h3 id="map阶段"><a href="#map阶段" class="headerlink" title="map阶段"></a>map阶段</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class Mappper extends Mapper&lt;LongWritable, Text, Text, GunBean&gt;</span><br><span class="line">     &#123;</span><br><span class="line">        GunBean gunbean = new GunBean();</span><br><span class="line">    	protected void map(LongWritable key, Text value, Mapper&lt;LongWritable, Text, Text, GunBean&gt;.Context context)</span><br><span class="line">    			throws IOException, InterruptedException </span><br><span class="line">    	 &#123;</span><br><span class="line">    		 String id;</span><br><span class="line">    	     String line = new String(value.getBytes(),0,value.getLength(),&quot;GBK&quot;);</span><br><span class="line">    		 FileSplit inputSplit = (FileSplit) context.getInputSplit();</span><br><span class="line">    	     String name = inputSplit.getPath().getName();</span><br><span class="line">    	     Text K = new Text();</span><br><span class="line">    	     if(name.startsWith(&quot;gun&quot;))</span><br><span class="line">    	     &#123; 	    	</span><br><span class="line">    	    	 String[] fields = line.split(&quot;\t&quot;);</span><br><span class="line">    	    	 gunbean.set(fields[0], fields[1], fields[2], &quot; &quot;, &quot; &quot;,1);</span><br><span class="line">    	    	 id=fields[0];</span><br><span class="line">    	     &#125;</span><br><span class="line">    	     else</span><br><span class="line">    	     &#123;</span><br><span class="line">    	    	 String[] fields = line.split(&quot;\t&quot;);</span><br><span class="line">    	    	 gunbean.set(fields[2], &quot; &quot;, &quot; &quot;, fields[0],  fields[1],0); </span><br><span class="line">    	    	 id=fields[2];</span><br><span class="line">    	     &#125;</span><br><span class="line">    	     K.set(id);</span><br><span class="line">    	     context.write(K, gunbean);    	      </span><br><span class="line">    	 &#125;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+<p>根据文件的flag也就是最后一个值来确定是什么文件，这里的key基本废柴。然后就是什么文件就怎么切，切好了装箱发给reduce</p>
+<h3 id="reduce阶段"><a href="#reduce阶段" class="headerlink" title="reduce阶段"></a>reduce阶段</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">static class MjReducer extends Reducer&lt;Text, GunBean, GunBean, NullWritable&gt;</span><br><span class="line">    &#123;</span><br><span class="line">   	@Override</span><br><span class="line">   	protected void reduce(Text key, Iterable&lt;GunBean&gt; value,</span><br><span class="line">   			Reducer&lt;Text, GunBean, GunBean, NullWritable&gt;.Context context) throws IOException, InterruptedException </span><br><span class="line">   	 &#123;</span><br><span class="line">   		 GunBean gb = null;</span><br><span class="line">   		 GunBean pgbb =null;</span><br><span class="line">   		 for(GunBean g:value) </span><br><span class="line">   		 &#123;</span><br><span class="line">   		  if(g.getFlag()==1)</span><br><span class="line">   		  &#123;   			</span><br><span class="line">   			 try &#123;</span><br><span class="line">   				 gb = new GunBean();</span><br><span class="line">				 BeanUtils.copyProperties(gb, g);</span><br><span class="line">			     &#125; catch (Exception e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			                           &#125;  			                        			 </span><br><span class="line">   		  &#125;else </span><br><span class="line">   		  &#123;   		</span><br><span class="line">       		 try &#123;</span><br><span class="line">       		8		 pgbb = new GunBean();</span><br><span class="line">       				 BeanUtils.copyProperties(pgbb, g);</span><br><span class="line">   				 &#125; catch (Exception e) &#123;</span><br><span class="line">   					e.printStackTrace();</span><br><span class="line">   				                       &#125;       	</span><br><span class="line">   		  &#125; </span><br><span class="line">            &#125;</span><br><span class="line">		  pgbb.setGun_name(gb.getGun_name());</span><br><span class="line">		  pgbb.setGun_skin(gb.getGun_skin());</span><br><span class="line">		  context.write(pgbb, null);		 </span><br><span class="line">   	 &#125; </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>reduce 阶段就是分包与和包，先建两个bean分别管两个文件中的信息，最后根据自己的喜好把其中的一个bean和另外一个bean的信息合并，再把bean输出。<br>这里是一个bean存一半信息，bean类里以及定义了涉及到的所有字段。</p>
+<p>补充：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BeanUtils.copyProperties(gb, g);</span><br></pre></td></tr></table></figure></p>
+<p>这句话是把后面来的对象里面的值赋给当前对象的值，用在这里是避免只输入一个对象，而造成了重复！</p>
+<h2 id="程序2"><a href="#程序2" class="headerlink" title="程序2"></a>程序2</h2><h3 id="需求：生成索引文件，例如类似：精英之作-gun-log-2-（皮肤名-文件名-在文件中出现的次数"><a href="#需求：生成索引文件，例如类似：精英之作-gun-log-2-（皮肤名-文件名-在文件中出现的次数" class="headerlink" title="需求：生成索引文件，例如类似：精英之作  gun.log  2  （皮肤名  文件名  在文件中出现的次数)"></a>需求：生成索引文件，例如类似：精英之作  gun.log  2  （皮肤名  文件名  在文件中出现的次数)</h3><h3 id="分析-有了上个程序的取文件名这个就非常简单，前面的文件名和皮肤名类似与WordCount中的单词-后面的出现的次数-就是单词计数。不同的的是，由于文件的格式，这个结果需要两个mr文件串一起执行！"><a href="#分析-有了上个程序的取文件名这个就非常简单，前面的文件名和皮肤名类似与WordCount中的单词-后面的出现的次数-就是单词计数。不同的的是，由于文件的格式，这个结果需要两个mr文件串一起执行！" class="headerlink" title="分析: 有了上个程序的取文件名这个就非常简单，前面的文件名和皮肤名类似与WordCount中的单词 后面的出现的次数 就是单词计数。不同的的是，由于文件的格式，这个结果需要两个mr文件串一起执行！"></a>分析: 有了上个程序的取文件名这个就非常简单，前面的文件名和皮肤名类似与WordCount中的单词 后面的出现的次数 就是单词计数。不同的的是，由于文件的格式，这个结果需要两个mr文件串一起执行！</h3><h3 id="step1"><a href="#step1" class="headerlink" title="step1"></a>step1</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">static class inverMapper extends Mapper&lt;LongWritable, Text, Text, IntWritable&gt;</span><br><span class="line">         &#123;</span><br><span class="line">              @Override</span><br><span class="line">       	protected void map(LongWritable key, Text value,Context context)</span><br><span class="line">       			throws IOException, InterruptedException &#123;</span><br><span class="line">       	      String line = new String(value.getBytes(), 0, value.getLength(), &quot;GBK&quot;);</span><br><span class="line">       	      String[] fields = line.split(&quot;\t&quot;);</span><br><span class="line">       	      FileSplit inputSplit = (FileSplit) context.getInputSplit();</span><br><span class="line">       	      String fname = inputSplit.getPath().getName();</span><br><span class="line">       	      Text k = new Text();</span><br><span class="line">       	      IntWritable v = new IntWritable(1);</span><br><span class="line">       	      k.set(fields[1]+&quot;----&gt;&quot;+fname);</span><br><span class="line">       	      context.write(k, v);</span><br><span class="line">       	&#125;  </span><br><span class="line">         &#125;</span><br><span class="line">         </span><br><span class="line">         static class inverReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;</span><br><span class="line">         &#123;</span><br><span class="line">       	      @Override</span><br><span class="line">       	    protected void reduce(Text key, Iterable&lt;IntWritable&gt; value,</span><br><span class="line">       	    		Reducer&lt;Text, IntWritable, Text, IntWritable&gt;.Context context)</span><br><span class="line">       	    		throws IOException, InterruptedException &#123;</span><br><span class="line">       	      int count = 0 ;</span><br><span class="line">       	      for(IntWritable a:value)</span><br><span class="line">       	      &#123;  </span><br><span class="line">       	    	  count+=a.get();</span><br><span class="line">       	      &#125;</span><br><span class="line">       	      IntWritable v = new IntWritable(count);</span><br><span class="line">       	      context.write(key, v);</span><br><span class="line">       	    		  </span><br><span class="line">       	    &#125;</span><br><span class="line">         &#125;</span><br></pre></td></tr></table></figure>
+<p>很容易理解在map阶段中，先取了名字，然后把文件名和皮肤名拼在一起当作wordcount中的单词，其余的和wordcount一样了；<br>但是输出的结果是</p>
+<ul>
+<li>精英之作  gun.log  2</li>
+<li>精英之作  gun.log  1</li>
+<li>精英之作  gun.log  5</li>
+<li>二西莫夫  gun.log  3</li>
+<li>二西莫夫  gun.log  1</li>
+</ul>
+<p>出现了重复，所以还需要第二步去重</p>
+<h3 id="step2"><a href="#step2" class="headerlink" title="step2"></a>step2</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">static class IRMapper extends Mapper&lt;LongWritable, Text, Text, Text&gt;</span><br><span class="line">    &#123;</span><br><span class="line">         @Override</span><br><span class="line">  	protected void map(LongWritable key, Text value,Context context)</span><br><span class="line">  			throws IOException, InterruptedException &#123;</span><br><span class="line">  	      String line = value.toString();</span><br><span class="line">  	      String[] fields = line.split(&quot;\t&quot;);   	       	   </span><br><span class="line">  	      Text k = new Text();</span><br><span class="line">  	      Text v = new Text();</span><br><span class="line">  	      k.set(fields[0]);</span><br><span class="line">  	      v.set(fields[1]+&quot;	&quot;+fields[2]);</span><br><span class="line">  	      context.write(k, v);</span><br><span class="line">  	&#125;  </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    static class IRReducer extends Reducer&lt;Text, Text, Text, Text&gt;</span><br><span class="line">    &#123;</span><br><span class="line">  	      @Override</span><br><span class="line">  	    protected void reduce(Text key, Iterable&lt;Text&gt; value,</span><br><span class="line">  	    		Reducer&lt;Text, Text, Text, Text&gt;.Context context)</span><br><span class="line">  	    		throws IOException, InterruptedException &#123;</span><br><span class="line">  	    StringBuffer sb = new StringBuffer();</span><br><span class="line">  	    for(Text v:value)</span><br><span class="line">  	      &#123;</span><br><span class="line">  	    	  sb.append(v.toString());</span><br><span class="line">  	      &#125;</span><br><span class="line">  	    Text V = new Text(sb.toString());</span><br><span class="line">  	    context.write(key,V);</span><br><span class="line">  	    &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在第二步时，对于reduce阶段把它们拼接在一起的时候有点懵了，想来想去reduce循环阶段每次都执行一次怎么拼也拼不上。后来想到了StringBuffer<br>就引刃而解了。。。。。<br>这里的map就是找皮肤名也就是key，reduce而是把出现的文件名和次数拼接在一行输出。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/15/烂大街的题目----找出两个人的共同好友/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -367,13 +506,13 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/15/拯救笔记----解决恼人的数据倾斜/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -491,13 +630,13 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/14/拯救笔记----Partition之电话号码归属地分类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -614,13 +753,13 @@ job.setPartitionerClass(那个Partition类的类名.class);
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/13/yarn与mr程序的那些事/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -757,13 +896,13 @@ job.setPartitionerClass(那个Partition类的类名.class);
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/11/关于MapReduce的所有个人理解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -927,13 +1066,13 @@ job.setPartitionerClass(那个Partition类的类名.class);
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/11/拯救笔记----流量汇总排序mr程序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -1056,16 +1195,264 @@ context.write(K,V);
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/正式安装hadoop/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/关于JAVA的一些小记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
+      <meta itemprop="name" content="源">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
+      <meta itemprop="name" content="giao哥的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/25/关于JAVA的一些小记/" itemprop="url">关于JAVA的一些小记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-25T23:22:00+08:00">
+                2017-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-线程调用-run-和-start-的-区别"><a href="#1-线程调用-run-和-start-的-区别" class="headerlink" title="1.线程调用 run 和 start 的 区别"></a>1.线程调用 run 和 start 的 区别</h2><p>调用run方法，其本质就是一个普通方法的调用，不会开启新的线程。</p>
+<p>调用start方法，才会开启一个线程来执行run里面的方法</p>
+<h2 id="2-使用Thread和Runnable的区别"><a href="#2-使用Thread和Runnable的区别" class="headerlink" title="2.使用Thread和Runnable的区别"></a>2.使用Thread和Runnable的区别</h2><p>Thread：先继承Thread，然后通过new来实现类</p>
+<p>Runnable：先继承Runnable，然后new Thread(new 实现类的对象,线程名)</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/Linux安装hadoop前的配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="giao哥的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/25/Linux安装hadoop前的配置/" itemprop="url">Linux安装hadoop前的配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-25T23:22:00+08:00">
+                2017-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="基本几步搞定linux配置"><a href="#基本几步搞定linux配置" class="headerlink" title="基本几步搞定linux配置"></a>基本几步搞定linux配置</h1><h2 id="自己看视频总结的。。"><a href="#自己看视频总结的。。" class="headerlink" title="自己看视频总结的。。"></a>自己看视频总结的。。</h2><p>在centos用minimal安装成功后..先干这几步</p>
+<h2 id="1-修改网卡的基本配置"><a href="#1-修改网卡的基本配置" class="headerlink" title="1. 修改网卡的基本配置"></a>1. 修改网卡的基本配置</h2><h3 id="vi-etc-sysconfig-network-scripts-ifcfg-etho"><a href="#vi-etc-sysconfig-network-scripts-ifcfg-etho" class="headerlink" title="vi /etc/sysconfig/network-scripts/ifcfg-etho"></a>vi /etc/sysconfig/network-scripts/ifcfg-etho</h3><p>DEVICE=eth0 （网卡的物理位置）<br>ONBOOT=yes（默认加载项）<br>BOOTPROTO=static（设置成静态网卡）<br>IPADDR=设置的ip地址（不用解释了吧）</p>
+<h2 id="2-修改网卡的全局配置"><a href="#2-修改网卡的全局配置" class="headerlink" title="2. 修改网卡的全局配置"></a>2. 修改网卡的全局配置</h2><h3 id="vi-etc-sysconfig-network"><a href="#vi-etc-sysconfig-network" class="headerlink" title="vi /etc/sysconfig/network"></a>vi /etc/sysconfig/network</h3><p>NETWORKING=yes<br>HOSTNAME=主机名（全局主机名，用于区分集群的机器，以及配置hosts）<br>GATEWAY=网关（网关地址，如果是虚拟机就看虚拟网络配置中的网关）</p>
+<h2 id="3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"><a href="#3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）" class="headerlink" title="3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"></a>3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）</h2><h3 id="vi-etc-udev-rules-d-70-persistent-net-rules"><a href="#vi-etc-udev-rules-d-70-persistent-net-rules" class="headerlink" title="vi /etc/udev/rules.d/70-persistent-net.rules"></a>vi /etc/udev/rules.d/70-persistent-net.rules</h3><p>删除原eth0，把eth1改成eth0</p>
+<h2 id="4-修改hosts文件（重要的一匹！！！！）"><a href="#4-修改hosts文件（重要的一匹！！！！）" class="headerlink" title="4. 修改hosts文件（重要的一匹！！！！）"></a>4. 修改hosts文件（重要的一匹！！！！）</h2><h3 id="vi-etc-hosts"><a href="#vi-etc-hosts" class="headerlink" title="vi /etc/hosts"></a>vi /etc/hosts</h3><p>格式： IP地址  域名</p>
+<h2 id="5-（补充）当域名ping不通外网时候的解决办法"><a href="#5-（补充）当域名ping不通外网时候的解决办法" class="headerlink" title="5.（补充）当域名ping不通外网时候的解决办法"></a>5.（补充）当域名ping不通外网时候的解决办法</h2><h3 id="vi-etc-resolv-conf"><a href="#vi-etc-resolv-conf" class="headerlink" title="vi /etc/resolv.conf"></a>vi /etc/resolv.conf</h3><p>   设置DNS服务器<br>   nameserver 8.8.8.8<br>   nameserver 8.8.4.4</p>
+<h2 id="6-给hadoop新建一个专属用户"><a href="#6-给hadoop新建一个专属用户" class="headerlink" title="6.给hadoop新建一个专属用户"></a>6.给hadoop新建一个专属用户</h2><h3 id="useradd-用户名-passwd-密码"><a href="#useradd-用户名-passwd-密码" class="headerlink" title="useradd 用户名 passwd 密码"></a>useradd 用户名 passwd 密码</h3><h2 id="7-简单两步配置ssh免密登陆"><a href="#7-简单两步配置ssh免密登陆" class="headerlink" title="7.简单两步配置ssh免密登陆"></a>7.简单两步配置ssh免密登陆</h2><h3 id="ssh-keygen（三下回车）"><a href="#ssh-keygen（三下回车）" class="headerlink" title="ssh-keygen（三下回车）"></a>ssh-keygen（三下回车）</h3><h3 id="ssh-copy-id-主机名（输入密码）"><a href="#ssh-copy-id-主机名（输入密码）" class="headerlink" title="ssh-copy-id 主机名（输入密码）"></a>ssh-copy-id 主机名（输入密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接下来就可以感受hadoop了</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/正式安装hadoop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="giao哥的档案库">
     </span>
 
     
@@ -1227,254 +1614,6 @@ context.write(K,V);
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/关于JAVA的一些小记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/25/关于JAVA的一些小记/" itemprop="url">关于JAVA的一些小记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-25T23:22:00+08:00">
-                2017-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-线程调用-run-和-start-的-区别"><a href="#1-线程调用-run-和-start-的-区别" class="headerlink" title="1.线程调用 run 和 start 的 区别"></a>1.线程调用 run 和 start 的 区别</h2><p>调用run方法，其本质就是一个普通方法的调用，不会开启新的线程。</p>
-<p>调用start方法，才会开启一个线程来执行run里面的方法</p>
-<h2 id="2-使用Thread和Runnable的区别"><a href="#2-使用Thread和Runnable的区别" class="headerlink" title="2.使用Thread和Runnable的区别"></a>2.使用Thread和Runnable的区别</h2><p>Thread：先继承Thread，然后通过new来实现类</p>
-<p>Runnable：先继承Runnable，然后new Thread(new 实现类的对象,线程名)</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/Linux安装hadoop前的配置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Gy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="M78星云档案库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/25/Linux安装hadoop前的配置/" itemprop="url">Linux安装hadoop前的配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-25T23:22:00+08:00">
-                2017-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="基本几步搞定linux配置"><a href="#基本几步搞定linux配置" class="headerlink" title="基本几步搞定linux配置"></a>基本几步搞定linux配置</h1><h2 id="自己看视频总结的。。"><a href="#自己看视频总结的。。" class="headerlink" title="自己看视频总结的。。"></a>自己看视频总结的。。</h2><p>在centos用minimal安装成功后..先干这几步</p>
-<h2 id="1-修改网卡的基本配置"><a href="#1-修改网卡的基本配置" class="headerlink" title="1. 修改网卡的基本配置"></a>1. 修改网卡的基本配置</h2><h3 id="vi-etc-sysconfig-network-scripts-ifcfg-etho"><a href="#vi-etc-sysconfig-network-scripts-ifcfg-etho" class="headerlink" title="vi /etc/sysconfig/network-scripts/ifcfg-etho"></a>vi /etc/sysconfig/network-scripts/ifcfg-etho</h3><p>DEVICE=eth0 （网卡的物理位置）<br>ONBOOT=yes（默认加载项）<br>BOOTPROTO=static（设置成静态网卡）<br>IPADDR=设置的ip地址（不用解释了吧）</p>
-<h2 id="2-修改网卡的全局配置"><a href="#2-修改网卡的全局配置" class="headerlink" title="2. 修改网卡的全局配置"></a>2. 修改网卡的全局配置</h2><h3 id="vi-etc-sysconfig-network"><a href="#vi-etc-sysconfig-network" class="headerlink" title="vi /etc/sysconfig/network"></a>vi /etc/sysconfig/network</h3><p>NETWORKING=yes<br>HOSTNAME=主机名（全局主机名，用于区分集群的机器，以及配置hosts）<br>GATEWAY=网关（网关地址，如果是虚拟机就看虚拟网络配置中的网关）</p>
-<h2 id="3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"><a href="#3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）" class="headerlink" title="3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"></a>3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）</h2><h3 id="vi-etc-udev-rules-d-70-persistent-net-rules"><a href="#vi-etc-udev-rules-d-70-persistent-net-rules" class="headerlink" title="vi /etc/udev/rules.d/70-persistent-net.rules"></a>vi /etc/udev/rules.d/70-persistent-net.rules</h3><p>删除原eth0，把eth1改成eth0</p>
-<h2 id="4-修改hosts文件（重要的一匹！！！！）"><a href="#4-修改hosts文件（重要的一匹！！！！）" class="headerlink" title="4. 修改hosts文件（重要的一匹！！！！）"></a>4. 修改hosts文件（重要的一匹！！！！）</h2><h3 id="vi-etc-hosts"><a href="#vi-etc-hosts" class="headerlink" title="vi /etc/hosts"></a>vi /etc/hosts</h3><p>格式： IP地址  域名</p>
-<h2 id="5-（补充）当域名ping不通外网时候的解决办法"><a href="#5-（补充）当域名ping不通外网时候的解决办法" class="headerlink" title="5.（补充）当域名ping不通外网时候的解决办法"></a>5.（补充）当域名ping不通外网时候的解决办法</h2><h3 id="vi-etc-resolv-conf"><a href="#vi-etc-resolv-conf" class="headerlink" title="vi /etc/resolv.conf"></a>vi /etc/resolv.conf</h3><p>   设置DNS服务器<br>   nameserver 8.8.8.8<br>   nameserver 8.8.4.4</p>
-<h2 id="6-给hadoop新建一个专属用户"><a href="#6-给hadoop新建一个专属用户" class="headerlink" title="6.给hadoop新建一个专属用户"></a>6.给hadoop新建一个专属用户</h2><h3 id="useradd-用户名-passwd-密码"><a href="#useradd-用户名-passwd-密码" class="headerlink" title="useradd 用户名 passwd 密码"></a>useradd 用户名 passwd 密码</h3><h2 id="7-简单两步配置ssh免密登陆"><a href="#7-简单两步配置ssh免密登陆" class="headerlink" title="7.简单两步配置ssh免密登陆"></a>7.简单两步配置ssh免密登陆</h2><h3 id="ssh-keygen（三下回车）"><a href="#ssh-keygen（三下回车）" class="headerlink" title="ssh-keygen（三下回车）"></a>ssh-keygen（三下回车）</h3><h3 id="ssh-copy-id-主机名（输入密码）"><a href="#ssh-copy-id-主机名（输入密码）" class="headerlink" title="ssh-copy-id 主机名（输入密码）"></a>ssh-copy-id 主机名（输入密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接下来就可以感受hadoop了</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1514,8 +1653,8 @@ context.write(K,V);
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <p class="site-author-name" itemprop="name">Gy</p>
-              <p class="site-description motion-element" itemprop="description">我是泰罗！对不起！泰罗</p>
+              <p class="site-author-name" itemprop="name">源</p>
+              <p class="site-description motion-element" itemprop="description">ok！~我立giaogiao</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -1525,7 +1664,7 @@ context.write(K,V);
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1538,7 +1677,7 @@ context.write(K,V);
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -1579,7 +1718,7 @@ context.write(K,V);
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Gy</span>
+  <span class="author" itemprop="copyrightHolder">源</span>
 
   
 </div>
