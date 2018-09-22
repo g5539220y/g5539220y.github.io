@@ -1195,7 +1195,7 @@ context.write(K,V);
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/Linux安装hadoop前的配置/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/关于JAVA的一些小记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="源">
@@ -1214,7 +1214,7 @@ context.write(K,V);
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/25/Linux安装hadoop前的配置/" itemprop="url">Linux安装hadoop前的配置</a></h1>
+                <a class="post-title-link" href="/2017/09/25/关于JAVA的一些小记/" itemprop="url">关于JAVA的一些小记</a></h1>
         
 
         <div class="post-meta">
@@ -1266,13 +1266,11 @@ context.write(K,V);
       
         
           
-            <h1 id="基本几步搞定linux配置"><a href="#基本几步搞定linux配置" class="headerlink" title="基本几步搞定linux配置"></a>基本几步搞定linux配置</h1><h2 id="自己看视频总结的。。"><a href="#自己看视频总结的。。" class="headerlink" title="自己看视频总结的。。"></a>自己看视频总结的。。</h2><p>在centos用minimal安装成功后..先干这几步</p>
-<h2 id="1-修改网卡的基本配置"><a href="#1-修改网卡的基本配置" class="headerlink" title="1. 修改网卡的基本配置"></a>1. 修改网卡的基本配置</h2><h3 id="vi-etc-sysconfig-network-scripts-ifcfg-etho"><a href="#vi-etc-sysconfig-network-scripts-ifcfg-etho" class="headerlink" title="vi /etc/sysconfig/network-scripts/ifcfg-etho"></a>vi /etc/sysconfig/network-scripts/ifcfg-etho</h3><p>DEVICE=eth0 （网卡的物理位置）<br>ONBOOT=yes（默认加载项）<br>BOOTPROTO=static（设置成静态网卡）<br>IPADDR=设置的ip地址（不用解释了吧）</p>
-<h2 id="2-修改网卡的全局配置"><a href="#2-修改网卡的全局配置" class="headerlink" title="2. 修改网卡的全局配置"></a>2. 修改网卡的全局配置</h2><h3 id="vi-etc-sysconfig-network"><a href="#vi-etc-sysconfig-network" class="headerlink" title="vi /etc/sysconfig/network"></a>vi /etc/sysconfig/network</h3><p>NETWORKING=yes<br>HOSTNAME=主机名（全局主机名，用于区分集群的机器，以及配置hosts）<br>GATEWAY=网关（网关地址，如果是虚拟机就看虚拟网络配置中的网关）</p>
-<h2 id="3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"><a href="#3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）" class="headerlink" title="3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"></a>3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）</h2><h3 id="vi-etc-udev-rules-d-70-persistent-net-rules"><a href="#vi-etc-udev-rules-d-70-persistent-net-rules" class="headerlink" title="vi /etc/udev/rules.d/70-persistent-net.rules"></a>vi /etc/udev/rules.d/70-persistent-net.rules</h3><p>删除原eth0，把eth1改成eth0</p>
-<h2 id="4-修改hosts文件（重要的一匹！！！！）"><a href="#4-修改hosts文件（重要的一匹！！！！）" class="headerlink" title="4. 修改hosts文件（重要的一匹！！！！）"></a>4. 修改hosts文件（重要的一匹！！！！）</h2><h3 id="vi-etc-hosts"><a href="#vi-etc-hosts" class="headerlink" title="vi /etc/hosts"></a>vi /etc/hosts</h3><p>格式： IP地址  域名</p>
-<h2 id="5-（补充）当域名ping不通外网时候的解决办法"><a href="#5-（补充）当域名ping不通外网时候的解决办法" class="headerlink" title="5.（补充）当域名ping不通外网时候的解决办法"></a>5.（补充）当域名ping不通外网时候的解决办法</h2><h3 id="vi-etc-resolv-conf"><a href="#vi-etc-resolv-conf" class="headerlink" title="vi /etc/resolv.conf"></a>vi /etc/resolv.conf</h3><p>   设置DNS服务器<br>   nameserver 8.8.8.8<br>   nameserver 8.8.4.4</p>
-<h2 id="6-给hadoop新建一个专属用户"><a href="#6-给hadoop新建一个专属用户" class="headerlink" title="6.给hadoop新建一个专属用户"></a>6.给hadoop新建一个专属用户</h2><h3 id="useradd-用户名-passwd-密码"><a href="#useradd-用户名-passwd-密码" class="headerlink" title="useradd 用户名 passwd 密码"></a>useradd 用户名 passwd 密码</h3><h2 id="7-简单两步配置ssh免密登陆"><a href="#7-简单两步配置ssh免密登陆" class="headerlink" title="7.简单两步配置ssh免密登陆"></a>7.简单两步配置ssh免密登陆</h2><h3 id="ssh-keygen（三下回车）"><a href="#ssh-keygen（三下回车）" class="headerlink" title="ssh-keygen（三下回车）"></a>ssh-keygen（三下回车）</h3><h3 id="ssh-copy-id-主机名（输入密码）"><a href="#ssh-copy-id-主机名（输入密码）" class="headerlink" title="ssh-copy-id 主机名（输入密码）"></a>ssh-copy-id 主机名（输入密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接下来就可以感受hadoop了</span><br></pre></td></tr></table></figure>
+            <h2 id="1-线程调用-run-和-start-的-区别"><a href="#1-线程调用-run-和-start-的-区别" class="headerlink" title="1.线程调用 run 和 start 的 区别"></a>1.线程调用 run 和 start 的 区别</h2><p>调用run方法，其本质就是一个普通方法的调用，不会开启新的线程。</p>
+<p>调用start方法，才会开启一个线程来执行run里面的方法</p>
+<h2 id="2-使用Thread和Runnable的区别"><a href="#2-使用Thread和Runnable的区别" class="headerlink" title="2.使用Thread和Runnable的区别"></a>2.使用Thread和Runnable的区别</h2><p>Thread：先继承Thread，然后通过new来实现类</p>
+<p>Runnable：先继承Runnable，然后new Thread(new 实现类的对象,线程名)</p>
+
           
         
       
@@ -1504,7 +1502,7 @@ context.write(K,V);
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/关于JAVA的一些小记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/25/Linux安装hadoop前的配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="源">
@@ -1523,7 +1521,7 @@ context.write(K,V);
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/25/关于JAVA的一些小记/" itemprop="url">关于JAVA的一些小记</a></h1>
+                <a class="post-title-link" href="/2017/09/25/Linux安装hadoop前的配置/" itemprop="url">Linux安装hadoop前的配置</a></h1>
         
 
         <div class="post-meta">
@@ -1575,11 +1573,13 @@ context.write(K,V);
       
         
           
-            <h2 id="1-线程调用-run-和-start-的-区别"><a href="#1-线程调用-run-和-start-的-区别" class="headerlink" title="1.线程调用 run 和 start 的 区别"></a>1.线程调用 run 和 start 的 区别</h2><p>调用run方法，其本质就是一个普通方法的调用，不会开启新的线程。</p>
-<p>调用start方法，才会开启一个线程来执行run里面的方法</p>
-<h2 id="2-使用Thread和Runnable的区别"><a href="#2-使用Thread和Runnable的区别" class="headerlink" title="2.使用Thread和Runnable的区别"></a>2.使用Thread和Runnable的区别</h2><p>Thread：先继承Thread，然后通过new来实现类</p>
-<p>Runnable：先继承Runnable，然后new Thread(new 实现类的对象,线程名)</p>
-
+            <h1 id="基本几步搞定linux配置"><a href="#基本几步搞定linux配置" class="headerlink" title="基本几步搞定linux配置"></a>基本几步搞定linux配置</h1><h2 id="自己看视频总结的。。"><a href="#自己看视频总结的。。" class="headerlink" title="自己看视频总结的。。"></a>自己看视频总结的。。</h2><p>在centos用minimal安装成功后..先干这几步</p>
+<h2 id="1-修改网卡的基本配置"><a href="#1-修改网卡的基本配置" class="headerlink" title="1. 修改网卡的基本配置"></a>1. 修改网卡的基本配置</h2><h3 id="vi-etc-sysconfig-network-scripts-ifcfg-etho"><a href="#vi-etc-sysconfig-network-scripts-ifcfg-etho" class="headerlink" title="vi /etc/sysconfig/network-scripts/ifcfg-etho"></a>vi /etc/sysconfig/network-scripts/ifcfg-etho</h3><p>DEVICE=eth0 （网卡的物理位置）<br>ONBOOT=yes（默认加载项）<br>BOOTPROTO=static（设置成静态网卡）<br>IPADDR=设置的ip地址（不用解释了吧）</p>
+<h2 id="2-修改网卡的全局配置"><a href="#2-修改网卡的全局配置" class="headerlink" title="2. 修改网卡的全局配置"></a>2. 修改网卡的全局配置</h2><h3 id="vi-etc-sysconfig-network"><a href="#vi-etc-sysconfig-network" class="headerlink" title="vi /etc/sysconfig/network"></a>vi /etc/sysconfig/network</h3><p>NETWORKING=yes<br>HOSTNAME=主机名（全局主机名，用于区分集群的机器，以及配置hosts）<br>GATEWAY=网关（网关地址，如果是虚拟机就看虚拟网络配置中的网关）</p>
+<h2 id="3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"><a href="#3-删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）" class="headerlink" title="3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）"></a>3. 删除克隆机相同的网卡（如果不是虚拟克隆机可以略过）</h2><h3 id="vi-etc-udev-rules-d-70-persistent-net-rules"><a href="#vi-etc-udev-rules-d-70-persistent-net-rules" class="headerlink" title="vi /etc/udev/rules.d/70-persistent-net.rules"></a>vi /etc/udev/rules.d/70-persistent-net.rules</h3><p>删除原eth0，把eth1改成eth0</p>
+<h2 id="4-修改hosts文件（重要的一匹！！！！）"><a href="#4-修改hosts文件（重要的一匹！！！！）" class="headerlink" title="4. 修改hosts文件（重要的一匹！！！！）"></a>4. 修改hosts文件（重要的一匹！！！！）</h2><h3 id="vi-etc-hosts"><a href="#vi-etc-hosts" class="headerlink" title="vi /etc/hosts"></a>vi /etc/hosts</h3><p>格式： IP地址  域名</p>
+<h2 id="5-（补充）当域名ping不通外网时候的解决办法"><a href="#5-（补充）当域名ping不通外网时候的解决办法" class="headerlink" title="5.（补充）当域名ping不通外网时候的解决办法"></a>5.（补充）当域名ping不通外网时候的解决办法</h2><h3 id="vi-etc-resolv-conf"><a href="#vi-etc-resolv-conf" class="headerlink" title="vi /etc/resolv.conf"></a>vi /etc/resolv.conf</h3><p>   设置DNS服务器<br>   nameserver 8.8.8.8<br>   nameserver 8.8.4.4</p>
+<h2 id="6-给hadoop新建一个专属用户"><a href="#6-给hadoop新建一个专属用户" class="headerlink" title="6.给hadoop新建一个专属用户"></a>6.给hadoop新建一个专属用户</h2><h3 id="useradd-用户名-passwd-密码"><a href="#useradd-用户名-passwd-密码" class="headerlink" title="useradd 用户名 passwd 密码"></a>useradd 用户名 passwd 密码</h3><h2 id="7-简单两步配置ssh免密登陆"><a href="#7-简单两步配置ssh免密登陆" class="headerlink" title="7.简单两步配置ssh免密登陆"></a>7.简单两步配置ssh免密登陆</h2><h3 id="ssh-keygen（三下回车）"><a href="#ssh-keygen（三下回车）" class="headerlink" title="ssh-keygen（三下回车）"></a>ssh-keygen（三下回车）</h3><h3 id="ssh-copy-id-主机名（输入密码）"><a href="#ssh-copy-id-主机名（输入密码）" class="headerlink" title="ssh-copy-id 主机名（输入密码）"></a>ssh-copy-id 主机名（输入密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接下来就可以感受hadoop了</span><br></pre></td></tr></table></figure>
           
         
       
