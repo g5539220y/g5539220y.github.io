@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Scala," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Scala是一个多写一个分号就是多余的艺术语言所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。 一切的开始—定义变量123val a=123    var a=123      val b=&amp;quot;a&amp;quot;    var b=&amp;quot;a&amp;quot;val c=3.0    var c=3.0 1.变量用var定义就是可变的，相当于java">
+<meta name="keywords" content="Scala">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我与Scala的心路历程">
+<meta property="og:url" content="http://yoursite.com/2018/01/21/我与Scala的心路历程/index.html">
+<meta property="og:site_name" content="阿源的档案库">
+<meta property="og:description" content="Scala是一个多写一个分号就是多余的艺术语言所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。 一切的开始—定义变量123val a=123    var a=123      val b=&amp;quot;a&amp;quot;    var b=&amp;quot;a&amp;quot;val c=3.0    var c=3.0 1.变量用var定义就是可变的，相当于java">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-21T15:16:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="我与Scala的心路历程">
+<meta name="twitter:description" content="Scala是一个多写一个分号就是多余的艺术语言所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。 一切的开始—定义变量123val a=123    var a=123      val b=&amp;quot;a&amp;quot;    var b=&amp;quot;a&amp;quot;val c=3.0    var c=3.0 1.变量用var定义就是可变的，相当于java">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/21/我与Scala的心路历程/"/>
+
+
+
+
+
+  <title>我与Scala的心路历程 | 阿源的档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">阿源的档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/21/我与Scala的心路历程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿源的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">我与Scala的心路历程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-21T23:15:00+08:00">
+                2018-01-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Scala是一个多写一个分号就是多余的艺术语言"><a href="#Scala是一个多写一个分号就是多余的艺术语言" class="headerlink" title="Scala是一个多写一个分号就是多余的艺术语言"></a>Scala是一个多写一个分号就是多余的艺术语言</h2><h3 id="所有Scala编译后的文件都是-class-后缀，也就是说，它完全运行在Java虚拟机中。"><a href="#所有Scala编译后的文件都是-class-后缀，也就是说，它完全运行在Java虚拟机中。" class="headerlink" title="所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。"></a>所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。</h3><hr>
+<h2 id="一切的开始—定义变量"><a href="#一切的开始—定义变量" class="headerlink" title="一切的开始—定义变量"></a>一切的开始—定义变量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val a=123    var a=123      </span><br><span class="line">val b=&quot;a&quot;    var b=&quot;a&quot;</span><br><span class="line">val c=3.0    var c=3.0</span><br></pre></td></tr></table></figure>
+<h4 id="1-变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量"><a href="#1-变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量" class="headerlink" title="1.变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量"></a>1.变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量</h4><h4 id="2-变量所有的类型不必声明，由值来决定"><a href="#2-变量所有的类型不必声明，由值来决定" class="headerlink" title="2.变量所有的类型不必声明，由值来决定"></a>2.变量所有的类型不必声明，由值来决定</h4><h4 id="3-Scala有7种数值类型，和Java一样，但是没有包装类型"><a href="#3-Scala有7种数值类型，和Java一样，但是没有包装类型" class="headerlink" title="3.Scala有7种数值类型，和Java一样，但是没有包装类型"></a>3.Scala有7种数值类型，和Java一样，但是没有包装类型</h4><hr>
+<h2 id="程序的灵魂—分支语句"><a href="#程序的灵魂—分支语句" class="headerlink" title="程序的灵魂—分支语句"></a>程序的灵魂—分支语句</h2><h3 id="Java中的if-else-和elseif-完全适用于Scala中-if-else的判断后可以用一个值来接，一共有两种方式"><a href="#Java中的if-else-和elseif-完全适用于Scala中-if-else的判断后可以用一个值来接，一共有两种方式" class="headerlink" title="Java中的if else 和elseif 完全适用于Scala中,if else的判断后可以用一个值来接，一共有两种方式"></a>Java中的if else 和elseif 完全适用于Scala中,if else的判断后可以用一个值来接，一共有两种方式</h3><h3 id="1-一句撸"><a href="#1-一句撸" class="headerlink" title="1.一句撸"></a>1.一句撸</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val res = if (3&gt;2) 1 else if (5&gt;1) 2 else &quot;error&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="2-块表达式"><a href="#2-块表达式" class="headerlink" title="2.块表达式"></a>2.块表达式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val result = &#123;</span><br><span class="line">  if (3 &lt; 2)&#123;</span><br><span class="line">    1</span><br><span class="line">  &#125; else if(5 &gt; 1) &#123;</span><br><span class="line">    2</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &quot;error&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="重复的工作—循环"><a href="#重复的工作—循环" class="headerlink" title="重复的工作—循环"></a>重复的工作—循环</h2><h3 id="Scala中有for和while、do-while循环"><a href="#Scala中有for和while、do-while循环" class="headerlink" title="Scala中有for和while、do while循环"></a>Scala中有for和while、do while循环</h3><h4 id="在scala中循环变量的迭代用to表示"><a href="#在scala中循环变量的迭代用to表示" class="headerlink" title="在scala中循环变量的迭代用to表示"></a>在scala中循环变量的迭代用to表示</h4><h4 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for(i &lt;- 1 to 10) println(&quot;I love Haihan&quot;)</span><br><span class="line">for(i&lt;- 1 to 9;j&lt;- 1 to 9;z&lt;- 1 to 9 if z%4==0) println(i+&quot;*&quot;+j+&quot;=&quot;+i*j)</span><br><span class="line">val arr = for(i &lt;- 1 to 10) yield i*10</span><br></pre></td></tr></table></figure>
+<h4 id="1-lt-相当于-，把迭代中的值赋给i"><a href="#1-lt-相当于-，把迭代中的值赋给i" class="headerlink" title="1. &lt;- 相当于=，把迭代中的值赋给i"></a>1. &lt;- 相当于=，把迭代中的值赋给i</h4><h4 id="2-如需定义多个变量，每个变量之间有一个”-”-在最后判断语句中不用"><a href="#2-如需定义多个变量，每个变量之间有一个”-”-在最后判断语句中不用" class="headerlink" title="2. 如需定义多个变量，每个变量之间有一个”;” 在最后判断语句中不用"></a>2. 如需定义多个变量，每个变量之间有一个”;” 在最后判断语句中不用</h4><h4 id="3-yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作"><a href="#3-yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作" class="headerlink" title="3. yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作"></a>3. yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作</h4><h2 id="Scala的烧脑之处—函数与方法"><a href="#Scala的烧脑之处—函数与方法" class="headerlink" title="Scala的烧脑之处—函数与方法"></a>Scala的烧脑之处—函数与方法</h2><h3 id="函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用"><a href="#函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用" class="headerlink" title="函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用"></a>函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用</h3><h3 id="定义函数"><a href="#定义函数" class="headerlink" title="定义函数"></a>定义函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val f1 = (a: Int,b: Int) =&gt; a+b</span><br></pre></td></tr></table></figure>
+<h4 id="定义函数的关键在于-gt-这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）"><a href="#定义函数的关键在于-gt-这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）" class="headerlink" title="定义函数的关键在于 =&gt; 这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）"></a>定义函数的关键在于 =&gt; 这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）</h4><h3 id="定义方法"><a href="#定义方法" class="headerlink" title="定义方法"></a>定义方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def m1(a: Int,b: Int) : Int = a+b</span><br></pre></td></tr></table></figure>
+<h4 id="定义方法的关键在于-def和-。方法中返回值也可以省略，方法不能作为变量传入，只能调用"><a href="#定义方法的关键在于-def和-。方法中返回值也可以省略，方法不能作为变量传入，只能调用" class="headerlink" title="定义方法的关键在于 def和= 。方法中返回值也可以省略，方法不能作为变量传入，只能调用"></a>定义方法的关键在于 def和= 。方法中返回值也可以省略，方法不能作为变量传入，只能调用</h4><h3 id="方法与函数的结合-烧脑部分"><a href="#方法与函数的结合-烧脑部分" class="headerlink" title="方法与函数的结合(烧脑部分)"></a>方法与函数的结合(烧脑部分)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def m1(f1 :(Int,Int) =&gt; Int) = f1(5,1) </span><br><span class="line">val f2=(a: Int,b:Int) =&gt; a+b</span><br><span class="line">m1(f2)</span><br></pre></td></tr></table></figure>
+<h4 id="程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值"><a href="#程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值" class="headerlink" title="程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值"></a>程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值</h4><h4 id="接着再定义一个函数，内容是将传入得到两个参数相加"><a href="#接着再定义一个函数，内容是将传入得到两个参数相加" class="headerlink" title="接着再定义一个函数，内容是将传入得到两个参数相加"></a>接着再定义一个函数，内容是将传入得到两个参数相加</h4><h4 id="最后把定义好的函数传入方法中！"><a href="#最后把定义好的函数传入方法中！" class="headerlink" title="最后把定义好的函数传入方法中！"></a>最后把定义好的函数传入方法中！</h4><h3 id="下划线的妙用"><a href="#下划线的妙用" class="headerlink" title="下划线的妙用"></a>下划线的妙用</h3><h4 id="符号-可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数"><a href="#符号-可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数" class="headerlink" title="符号 _ 可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数"></a>符号 _ 可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val m_f = m1 _</span><br><span class="line">val print = println _</span><br></pre></td></tr></table></figure>
+<h2 id="数的集合—元组、数组、集合、映射"><a href="#数的集合—元组、数组、集合、映射" class="headerlink" title="数的集合—元组、数组、集合、映射"></a>数的集合—元组、数组、集合、映射</h2><h3 id="数据和映射以及集合都包括定长和变长，只是两个包的事，就是"><a href="#数据和映射以及集合都包括定长和变长，只是两个包的事，就是" class="headerlink" title="数据和映射以及集合都包括定长和变长，只是两个包的事，就是"></a>数据和映射以及集合都包括定长和变长，只是两个包的事，就是</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import scala.collection.mutable._ -----变长</span><br><span class="line">import scala.collection.immutable._ -----定长</span><br></pre></td></tr></table></figure>
+<h4 id="1-数组"><a href="#1-数组" class="headerlink" title="1.数组"></a>1.数组</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">val arr = new Array[Int](8)</span><br><span class="line">//定义一个存储Int类型的数组，长度为8.以new的方式就直接为数组赋值了，其中调用了apply方法</span><br><span class="line">   </span><br><span class="line">println(arr1)</span><br><span class="line">//直接打印就是数组的hashcode值</span><br><span class="line"></span><br><span class="line">println(arr1.toBuffer)</span><br><span class="line">//输出数组里面的值</span><br><span class="line"></span><br><span class="line">val arr2 = Array[Int](10)</span><br><span class="line">//定义一个存储Int类型的数组，长度为1，只有一个10的值，通过静态类的方式</span><br><span class="line"></span><br><span class="line">val arr3 = Array(&quot;I&quot;, &quot;Love&quot;, &quot;haihan&quot;)</span><br><span class="line">//定义一个存储String类型的数组，长度为3，通过静态类的方式</span><br><span class="line"></span><br><span class="line">println(arr3(2))</span><br><span class="line">//访问数组的值，数组的角标是从0开始 </span><br><span class="line"></span><br><span class="line">arr2 += 1</span><br><span class="line">arr2 += (2, 3, 4, 5)</span><br><span class="line">//通过+=向数据的尾部追加元素，前提是必须是变长数组</span><br><span class="line"></span><br><span class="line">arr2 ++= Array(6, 7)</span><br><span class="line">arr2 ++= ArrayBuffer(8,9)</span><br><span class="line">//追加一个数组缓冲或数组，此时用++=</span><br><span class="line"></span><br><span class="line">arr2.insert(0, -1, 0)</span><br><span class="line">//在数组某个位置插入元素用insert,第一个参数是位置，在那个位置的前面，其余的参数是插入的数据</span><br><span class="line"></span><br><span class="line">arr2.remove(8, 2)</span><br><span class="line">//删除数组某个位置的元素用remove，第一个参数是位置，第二个参数是删除元素的个数</span><br><span class="line"></span><br><span class="line">for(i &lt;- arr) println(i)</span><br><span class="line">//数组直接勇敢for循环遍历</span><br><span class="line"> </span><br><span class="line">for(i &lt;- (0 until arr.length).reverse) println(i)</span><br><span class="line">//until与to类似 这里数组也支持length，reverse是将数组反转。这种方法比上面的少一个元素</span><br><span class="line"></span><br><span class="line">arr.max</span><br><span class="line">//最大(小min)值</span><br><span class="line"></span><br><span class="line">arr.sum</span><br><span class="line">//数组元素的和</span><br><span class="line"></span><br><span class="line">arr.sorted</span><br><span class="line">//数组排序</span><br></pre></td></tr></table></figure>
+<h4 id="2-映射"><a href="#2-映射" class="headerlink" title="2.映射"></a>2.映射</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">val map = Map(&quot;1&quot; -&gt; 2)</span><br><span class="line">//定义map，map是键值对的数据结构，k和v可以是任何类型</span><br><span class="line"></span><br><span class="line">map(&quot;1&quot;)</span><br><span class="line">//获取值</span><br><span class="line"></span><br><span class="line">val res = map.getOrElse(&quot;1&quot;,0)</span><br><span class="line">//第一个参数是K，如果K中有值就返回V。K中无值，则返回0</span><br><span class="line"></span><br><span class="line">map(&quot;&quot;) = 2</span><br><span class="line">map += ((&quot;1&quot;, 2))</span><br><span class="line">map.put(&quot;1&quot;, 2)</span><br><span class="line">//添加数据</span><br><span class="line"></span><br><span class="line">map -= &quot;1&quot;</span><br><span class="line">map.remove(&quot;1&quot;)</span><br><span class="line">//删除数据</span><br></pre></td></tr></table></figure>
+<h4 id="3-元组"><a href="#3-元组" class="headerlink" title="3.元组"></a>3.元组</h4><h5 id="映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型"><a href="#映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型" class="headerlink" title="映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型"></a>映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">val yz = （1,3.0,&quot;ILoveHaihan&quot;)</span><br><span class="line">//定义一个元组 里面有多种类型</span><br><span class="line"></span><br><span class="line">val one =yz._1</span><br><span class="line">//取出元组的值</span><br><span class="line"></span><br><span class="line">val arr = Array((&quot;1&quot;,1),(&quot;2&quot;,2))</span><br><span class="line">arr.toMap</span><br><span class="line">//将对偶元组转成Map</span><br><span class="line"></span><br><span class="line">val a1 = Array(&quot;1&quot;,&quot;2&quot;,&quot;3&quot;)</span><br><span class="line">val a2 = Array(1,2,3)</span><br><span class="line">a1.zip(a2)</span><br><span class="line">//拉链操作  res32: Array[(String, Int)] = Array((1,1), (2,2), (3,3))</span><br></pre></td></tr></table></figure>
+<h4 id="4-List"><a href="#4-List" class="headerlink" title="4.List"></a>4.List</h4><h5 id="符号-是右结合的，也就是1-2-3相当于-1-2-3"><a href="#符号-是右结合的，也就是1-2-3相当于-1-2-3" class="headerlink" title="符号::是右结合的，也就是1 :: 2 :: 3相当于 1 :: (2 :: 3 )"></a>符号::是右结合的，也就是1 :: 2 :: 3相当于 1 :: (2 :: 3 )</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">    </span><br><span class="line">    val lst1 = List(1,2,3)</span><br><span class="line">    val lst0 = List(4,5,6)</span><br><span class="line">    //创建List</span><br><span class="line">    </span><br><span class="line">    val lst2 = 0 :: lst1</span><br><span class="line">    val lst2 = lst1.::(0)</span><br><span class="line">    val lst2 = 0 +: lst1</span><br><span class="line">    val lst2 = lst1.+:(0)</span><br><span class="line">    //多种方法将0插入到lst1的前面生成一个新的List</span><br><span class="line"></span><br><span class="line">    val lst3 = lst1 :+ 3</span><br><span class="line">    //将一个元素添加到lst1的后面产生一个新的集合</span><br><span class="line">    </span><br><span class="line">    val lst4 = lst1 ++ lst0</span><br><span class="line">    val lst4 = lst1.:::(lst0)</span><br><span class="line">    //将lst1所有元素插到lst0的前面(合并)成一个新的List</span><br><span class="line">    </span><br><span class="line">    val lst5 = lst1 ++: lst0</span><br><span class="line">    //将lst1所有元素插到lst0的后面(合并)成一个新的List</span><br><span class="line">    </span><br><span class="line">    val l1 = List(5,6,4,7)</span><br><span class="line">    val l2 = List(1,2,3,4)</span><br><span class="line"></span><br><span class="line">    val res3 = l1.union(l2)</span><br><span class="line">    //求并集</span><br><span class="line">    </span><br><span class="line">    val res4 = l1.intersect(l2)</span><br><span class="line">    //求交集</span><br><span class="line">    </span><br><span class="line">    val res5 = l1 diff l2</span><br><span class="line">    //求差集</span><br><span class="line">    </span><br><span class="line">------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">    val lst0 = ListBuffer[Int](1,2,3)</span><br><span class="line">    //构建一个装Int型的可变列表，初始有3个元素1,2,3</span><br><span class="line">    val lst1 = new ListBuffer[Int]</span><br><span class="line">    //创建一个空的可变列表</span><br><span class="line">    </span><br><span class="line">    lst1 += 4</span><br><span class="line">    lst1.append(5)</span><br><span class="line">    //向lst1中追加元素，没有生成新的集合</span><br><span class="line">   </span><br><span class="line">    lst0 ++= lst1</span><br><span class="line">    //将lst1中的元素放到到lst0的后面，没有生成新的集合</span><br><span class="line">    </span><br><span class="line">    val lst2= lst0 ++ lst1</span><br><span class="line">    //将lst0和lst1合并成一个新的ListBuffer 生成了一个集合lst2</span><br><span class="line">    </span><br><span class="line">    val lst3 = lst0 :+ 5</span><br><span class="line">    //将5追加到lst0的后面生成一个新的集合lst3</span><br></pre></td></tr></table></figure>
+<h4 id="5-Set"><a href="#5-Set" class="headerlink" title="5.Set"></a>5.Set</h4><h5 id="Set是一个无重复元素，并且有序的集合"><a href="#Set是一个无重复元素，并且有序的集合" class="headerlink" title="Set是一个无重复元素，并且有序的集合"></a>Set是一个无重复元素，并且有序的集合</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">val set1 = new HashSet[Int]()</span><br><span class="line">//创建一个的HashSet</span><br><span class="line"></span><br><span class="line">set1 += 2</span><br><span class="line">set1.add(4)</span><br><span class="line">//向HashSet中添加元素</span><br><span class="line"></span><br><span class="line">set1 -= 5</span><br><span class="line">set1.remove(2)</span><br><span class="line">//向HashSet中添加元素</span><br><span class="line"></span><br><span class="line">set1 ++= Set(1,3,5)</span><br><span class="line">//两个set合并，顺序是穿插的</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Scala/" rel="tag"># Scala</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/11/kafka生产者和消费者官网demo的小白分析/" rel="next" title="kafka生产者和消费者官网demo的小白分析">
+                <i class="fa fa-chevron-left"></i> kafka生产者和消费者官网demo的小白分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/24/我与Scala的心路历程续----Scala面向对象/" rel="prev" title="我与Scala的心路历程续----Scala面向对象">
+                我与Scala的心路历程续----Scala面向对象 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">阿源</p>
+              <p class="site-description motion-element" itemprop="description">ok！~我立giaogiao</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Scala是一个多写一个分号就是多余的艺术语言"><span class="nav-number">1.</span> <span class="nav-text">Scala是一个多写一个分号就是多余的艺术语言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#所有Scala编译后的文件都是-class-后缀，也就是说，它完全运行在Java虚拟机中。"><span class="nav-number">1.1.</span> <span class="nav-text">所有Scala编译后的文件都是 *.class 后缀，也就是说，它完全运行在Java虚拟机中。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一切的开始—定义变量"><span class="nav-number">2.</span> <span class="nav-text">一切的开始—定义变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.变量用var定义就是可变的，相当于java中的普通变量。用val定义是不可变的，相当于java中final类型定义的变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-变量所有的类型不必声明，由值来决定"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.变量所有的类型不必声明，由值来决定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Scala有7种数值类型，和Java一样，但是没有包装类型"><span class="nav-number">2.0.3.</span> <span class="nav-text">3.Scala有7种数值类型，和Java一样，但是没有包装类型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#程序的灵魂—分支语句"><span class="nav-number">3.</span> <span class="nav-text">程序的灵魂—分支语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中的if-else-和elseif-完全适用于Scala中-if-else的判断后可以用一个值来接，一共有两种方式"><span class="nav-number">3.1.</span> <span class="nav-text">Java中的if else 和elseif 完全适用于Scala中,if else的判断后可以用一个值来接，一共有两种方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-一句撸"><span class="nav-number">3.2.</span> <span class="nav-text">1.一句撸</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-块表达式"><span class="nav-number">3.3.</span> <span class="nav-text">2.块表达式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复的工作—循环"><span class="nav-number">4.</span> <span class="nav-text">重复的工作—循环</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Scala中有for和while、do-while循环"><span class="nav-number">4.1.</span> <span class="nav-text">Scala中有for和while、do while循环</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在scala中循环变量的迭代用to表示"><span class="nav-number">4.1.1.</span> <span class="nav-text">在scala中循环变量的迭代用to表示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#for循环"><span class="nav-number">4.1.2.</span> <span class="nav-text">for循环</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-lt-相当于-，把迭代中的值赋给i"><span class="nav-number">4.1.3.</span> <span class="nav-text">1. &lt;- 相当于=，把迭代中的值赋给i</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-如需定义多个变量，每个变量之间有一个”-”-在最后判断语句中不用"><span class="nav-number">4.1.4.</span> <span class="nav-text">2. 如需定义多个变量，每个变量之间有一个”;” 在最后判断语句中不用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作"><span class="nav-number">4.1.5.</span> <span class="nav-text">3. yield的作用是。。每迭代一次，就把i的值取出来做yield后面的操作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scala的烧脑之处—函数与方法"><span class="nav-number">5.</span> <span class="nav-text">Scala的烧脑之处—函数与方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用"><span class="nav-number">5.1.</span> <span class="nav-text">函数在Scala中占着重要的地位，函数与方法类似，都是传值进去然后进行操作。不同的是，函数可以作为一个变量来使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义函数"><span class="nav-number">5.2.</span> <span class="nav-text">定义函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义函数的关键在于-gt-这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）"><span class="nav-number">5.2.1.</span> <span class="nav-text">定义函数的关键在于 =&gt; 这也是判断一个函数和方法的重要依据。函数的返回值可以省略（递归中不可省略），变量也可以省略（匿名函数）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义方法"><span class="nav-number">5.3.</span> <span class="nav-text">定义方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义方法的关键在于-def和-。方法中返回值也可以省略，方法不能作为变量传入，只能调用"><span class="nav-number">5.3.1.</span> <span class="nav-text">定义方法的关键在于 def和= 。方法中返回值也可以省略，方法不能作为变量传入，只能调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法与函数的结合-烧脑部分"><span class="nav-number">5.4.</span> <span class="nav-text">方法与函数的结合(烧脑部分)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值"><span class="nav-number">5.4.1.</span> <span class="nav-text">程序首先定义了一个传入一个函数的方法，方法的内容就是往传入的这个函数里面写两个Int值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接着再定义一个函数，内容是将传入得到两个参数相加"><span class="nav-number">5.4.2.</span> <span class="nav-text">接着再定义一个函数，内容是将传入得到两个参数相加</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最后把定义好的函数传入方法中！"><span class="nav-number">5.4.3.</span> <span class="nav-text">最后把定义好的函数传入方法中！</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下划线的妙用"><span class="nav-number">5.5.</span> <span class="nav-text">下划线的妙用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#符号-可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数"><span class="nav-number">5.5.1.</span> <span class="nav-text">符号 _ 可以将方法转化为函数（原方法不变）也可以将系统中println等转化成函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数的集合—元组、数组、集合、映射"><span class="nav-number">6.</span> <span class="nav-text">数的集合—元组、数组、集合、映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据和映射以及集合都包括定长和变长，只是两个包的事，就是"><span class="nav-number">6.1.</span> <span class="nav-text">数据和映射以及集合都包括定长和变长，只是两个包的事，就是</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-数组"><span class="nav-number">6.1.1.</span> <span class="nav-text">1.数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-映射"><span class="nav-number">6.1.2.</span> <span class="nav-text">2.映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-元组"><span class="nav-number">6.1.3.</span> <span class="nav-text">3.元组</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型"><span class="nav-number">6.1.3.1.</span> <span class="nav-text">映射是特殊的对偶元组，元组的下角标是从1开始的，元组里可以存多种类型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-List"><span class="nav-number">6.1.4.</span> <span class="nav-text">4.List</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#符号-是右结合的，也就是1-2-3相当于-1-2-3"><span class="nav-number">6.1.4.1.</span> <span class="nav-text">符号::是右结合的，也就是1 :: 2 :: 3相当于 1 :: (2 :: 3 )</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Set"><span class="nav-number">6.1.5.</span> <span class="nav-text">5.Set</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Set是一个无重复元素，并且有序的集合"><span class="nav-number">6.1.5.1.</span> <span class="nav-text">Set是一个无重复元素，并且有序的集合</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿源</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

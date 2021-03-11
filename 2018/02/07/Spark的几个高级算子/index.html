@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spark," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.mapPartitionsWithIndex用过传入一个函数或方法来查看rdd中的分区和分区值传入函数的基本实现123val f = (index: Int, iter: Iterator[(Int)]) =&amp;gt; &amp;#123;  iter.toList.map(x =&amp;gt; &amp;quot;[partID:&amp;quot; +  index + &amp;quot;, val: &amp;quot; + x).">
+<meta name="keywords" content="Spark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark的几个高级算子">
+<meta property="og:url" content="http://yoursite.com/2018/02/07/Spark的几个高级算子/index.html">
+<meta property="og:site_name" content="阿源的档案库">
+<meta property="og:description" content="1.mapPartitionsWithIndex用过传入一个函数或方法来查看rdd中的分区和分区值传入函数的基本实现123val f = (index: Int, iter: Iterator[(Int)]) =&amp;gt; &amp;#123;  iter.toList.map(x =&amp;gt; &amp;quot;[partID:&amp;quot; +  index + &amp;quot;, val: &amp;quot; + x).">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-06T23:16:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark的几个高级算子">
+<meta name="twitter:description" content="1.mapPartitionsWithIndex用过传入一个函数或方法来查看rdd中的分区和分区值传入函数的基本实现123val f = (index: Int, iter: Iterator[(Int)]) =&amp;gt; &amp;#123;  iter.toList.map(x =&amp;gt; &amp;quot;[partID:&amp;quot; +  index + &amp;quot;, val: &amp;quot; + x).">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/07/Spark的几个高级算子/"/>
+
+
+
+
+
+  <title>Spark的几个高级算子 | 阿源的档案库</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">阿源的档案库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/07/Spark的几个高级算子/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿源">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阿源的档案库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spark的几个高级算子</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-07T07:16:00+08:00">
+                2018-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-mapPartitionsWithIndex"><a href="#1-mapPartitionsWithIndex" class="headerlink" title="1.mapPartitionsWithIndex"></a>1.mapPartitionsWithIndex</h2><h3 id="用过传入一个函数或方法来查看rdd中的分区和分区值"><a href="#用过传入一个函数或方法来查看rdd中的分区和分区值" class="headerlink" title="用过传入一个函数或方法来查看rdd中的分区和分区值"></a>用过传入一个函数或方法来查看rdd中的分区和分区值</h3><h4 id="传入函数的基本实现"><a href="#传入函数的基本实现" class="headerlink" title="传入函数的基本实现"></a>传入函数的基本实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val f = (index: Int, iter: Iterator[(Int)]) =&gt; &#123;</span><br><span class="line">  iter.toList.map(x =&gt; &quot;[partID:&quot; +  index + &quot;, val: &quot; + x).iterator</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-repartition"><a href="#2-repartition" class="headerlink" title="2.repartition"></a>2.repartition</h2><h3 id="重新分区，对于已经分区的rdd来重新分区-传入一个Int类型"><a href="#重新分区，对于已经分区的rdd来重新分区-传入一个Int类型" class="headerlink" title="重新分区，对于已经分区的rdd来重新分区 传入一个Int类型"></a>重新分区，对于已经分区的rdd来重新分区 传入一个Int类型</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(Array(1,2,3,4,5,6),2)</span><br><span class="line">val rdd2 = rdd1.repartition(3)</span><br></pre></td></tr></table></figure>
+<h2 id="3-coalesce"><a href="#3-coalesce" class="headerlink" title="3.coalesce"></a>3.coalesce</h2><h3 id="合并，对已经分好的分区进行合并操作-传入一个Int类型和一个布尔类型-是否shuffle"><a href="#合并，对已经分好的分区进行合并操作-传入一个Int类型和一个布尔类型-是否shuffle" class="headerlink" title="合并，对已经分好的分区进行合并操作 传入一个Int类型和一个布尔类型(是否shuffle)"></a>合并，对已经分好的分区进行合并操作 传入一个Int类型和一个布尔类型(是否shuffle)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val rdd3 = rdd2.coalesce(2,true)</span><br></pre></td></tr></table></figure>
+<h2 id="4-collectAsMap"><a href="#4-collectAsMap" class="headerlink" title="4.collectAsMap"></a>4.collectAsMap</h2><h3 id="把rdd中的对偶元组转化成map格式"><a href="#把rdd中的对偶元组转化成map格式" class="headerlink" title="把rdd中的对偶元组转化成map格式"></a>把rdd中的对偶元组转化成map格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd = sc.parallelize(List((&quot;a&quot;, 1), (&quot;b&quot;, 2)))</span><br><span class="line">rdd.collectAsMap</span><br></pre></td></tr></table></figure>
+<h2 id="5-countByKey-countByValues"><a href="#5-countByKey-countByValues" class="headerlink" title="5.countByKey(countByValues)"></a>5.countByKey(countByValues)</h2><h3 id="统计key出现的次数结果以map显示-统计value出现次数结果以map显示"><a href="#统计key出现的次数结果以map显示-统计value出现次数结果以map显示" class="headerlink" title="统计key出现的次数结果以map显示(统计value出现次数结果以map显示)"></a>统计key出现的次数结果以map显示(统计value出现次数结果以map显示)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List((&quot;g&quot;, 1), (&quot;g&quot;, 2), (&quot;y&quot;, 2), (&quot;y&quot;, 2), (&quot;h&quot;, 1)))</span><br><span class="line">rdd1.countByKey</span><br><span class="line">rdd1.countByValue</span><br></pre></td></tr></table></figure>
+<h2 id="6-filterByRange"><a href="#6-filterByRange" class="headerlink" title="6.filterByRange"></a>6.filterByRange</h2><h3 id="先对范围排序再截取范围，在对偶元组中以String为准"><a href="#先对范围排序再截取范围，在对偶元组中以String为准" class="headerlink" title="先对范围排序再截取范围，在对偶元组中以String为准"></a>先对范围排序再截取范围，在对偶元组中以String为准</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List((&quot;e&quot;, 5), (&quot;c&quot;, 3), (&quot;d&quot;, 4), (&quot;c&quot;, 2), (&quot;a&quot;, 1)))</span><br><span class="line">val rdd2 = rdd1.filterByRange(&quot;b&quot;, &quot;d&quot;).collect</span><br></pre></td></tr></table></figure>
+<h2 id="7-flatMapValues"><a href="#7-flatMapValues" class="headerlink" title="7.flatMapValues"></a>7.flatMapValues</h2><h3 id="切分value中的值，使key对value一一对应"><a href="#切分value中的值，使key对value一一对应" class="headerlink" title="切分value中的值，使key对value一一对应"></a>切分value中的值，使key对value一一对应</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val rdd3 = sc.parallelize(List((&quot;a&quot;, &quot;1 2&quot;), (&quot;b&quot;, &quot;3 4&quot;)))</span><br><span class="line">val rdd4 = rdd3.flatMapValues(_.split(&quot; &quot;))</span><br><span class="line">rdd4.collect</span><br></pre></td></tr></table></figure>
+<p>结果：Array[(String, String)] = Array((a,1), (a,2), (b,3), (b,4))  </p>
+<h2 id="8-foldByKey"><a href="#8-foldByKey" class="headerlink" title="8.foldByKey"></a>8.foldByKey</h2><h3 id="把相同的key中的values相加起来"><a href="#把相同的key中的values相加起来" class="headerlink" title="把相同的key中的values相加起来"></a>把相同的key中的values相加起来</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List(&quot;dog&quot;, &quot;wolf&quot;, &quot;cat&quot;, &quot;bear&quot;), 2)</span><br><span class="line">val rdd2 = rdd1.map(x =&gt; (x.length, x))</span><br><span class="line">val rdd3 = rdd2.foldByKey(&quot;&quot;)(_+_)</span><br><span class="line">rdd3.collect</span><br></pre></td></tr></table></figure>
+<p>结果:Array[(Int, String)] = Array((4,wolfbear), (3,catdog))</p>
+<h2 id="9-foreachPartition"><a href="#9-foreachPartition" class="headerlink" title="9.foreachPartition"></a>9.foreachPartition</h2><h3 id="在不生成新的rdd1的情况下遍历或操作rdd"><a href="#在不生成新的rdd1的情况下遍历或操作rdd" class="headerlink" title="在不生成新的rdd1的情况下遍历或操作rdd"></a>在不生成新的rdd1的情况下遍历或操作rdd</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List(1, 2, 3, 4, 5, 6, 7, 8, 9), 3)</span><br><span class="line">rdd1.foreachPartition(x =&gt; println(x.reduce(_ + _)))</span><br></pre></td></tr></table></figure>
+<h2 id="10-keyBy"><a href="#10-keyBy" class="headerlink" title="10.keyBy"></a>10.keyBy</h2><h3 id="以传入的参数做key"><a href="#以传入的参数做key" class="headerlink" title="以传入的参数做key"></a>以传入的参数做key</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List(&quot;dog&quot;, &quot;salmon&quot;, &quot;salmon&quot;, &quot;rat&quot;, &quot;elephant&quot;), 3)</span><br><span class="line">val rdd2 = rdd1.keyBy(_.length)</span><br><span class="line">rdd2.collect</span><br></pre></td></tr></table></figure>
+<h2 id="11-keys-values"><a href="#11-keys-values" class="headerlink" title="11.keys values"></a>11.keys values</h2><h3 id="直接取出key或values的值"><a href="#直接取出key或values的值" class="headerlink" title="直接取出key或values的值"></a>直接取出key或values的值</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val rdd1 = sc.parallelize(List(&quot;dog&quot;, &quot;tiger&quot;, &quot;lion&quot;, &quot;cat&quot;, &quot;panther&quot;, &quot;eagle&quot;), 2)</span><br><span class="line">val rdd2 = rdd1.map(x =&gt; (x.length, x))</span><br><span class="line">rdd2.keys.collect</span><br><span class="line">rdd2.values.collect</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark/" rel="tag"># Spark</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/24/我与Scala的心路历程续----Scala面向对象/" rel="next" title="我与Scala的心路历程续----Scala面向对象">
+                <i class="fa fa-chevron-left"></i> 我与Scala的心路历程续----Scala面向对象
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/10/对storm的理解和一些细节的说明/" rel="prev" title="对storm的理解和一些细节的说明">
+                对storm的理解和一些细节的说明 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">阿源</p>
+              <p class="site-description motion-element" itemprop="description">ok！~我立giaogiao</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-mapPartitionsWithIndex"><span class="nav-number">1.</span> <span class="nav-text">1.mapPartitionsWithIndex</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用过传入一个函数或方法来查看rdd中的分区和分区值"><span class="nav-number">1.1.</span> <span class="nav-text">用过传入一个函数或方法来查看rdd中的分区和分区值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#传入函数的基本实现"><span class="nav-number">1.1.1.</span> <span class="nav-text">传入函数的基本实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-repartition"><span class="nav-number">2.</span> <span class="nav-text">2.repartition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重新分区，对于已经分区的rdd来重新分区-传入一个Int类型"><span class="nav-number">2.1.</span> <span class="nav-text">重新分区，对于已经分区的rdd来重新分区 传入一个Int类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-coalesce"><span class="nav-number">3.</span> <span class="nav-text">3.coalesce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#合并，对已经分好的分区进行合并操作-传入一个Int类型和一个布尔类型-是否shuffle"><span class="nav-number">3.1.</span> <span class="nav-text">合并，对已经分好的分区进行合并操作 传入一个Int类型和一个布尔类型(是否shuffle)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-collectAsMap"><span class="nav-number">4.</span> <span class="nav-text">4.collectAsMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#把rdd中的对偶元组转化成map格式"><span class="nav-number">4.1.</span> <span class="nav-text">把rdd中的对偶元组转化成map格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-countByKey-countByValues"><span class="nav-number">5.</span> <span class="nav-text">5.countByKey(countByValues)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#统计key出现的次数结果以map显示-统计value出现次数结果以map显示"><span class="nav-number">5.1.</span> <span class="nav-text">统计key出现的次数结果以map显示(统计value出现次数结果以map显示)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-filterByRange"><span class="nav-number">6.</span> <span class="nav-text">6.filterByRange</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先对范围排序再截取范围，在对偶元组中以String为准"><span class="nav-number">6.1.</span> <span class="nav-text">先对范围排序再截取范围，在对偶元组中以String为准</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-flatMapValues"><span class="nav-number">7.</span> <span class="nav-text">7.flatMapValues</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#切分value中的值，使key对value一一对应"><span class="nav-number">7.1.</span> <span class="nav-text">切分value中的值，使key对value一一对应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-foldByKey"><span class="nav-number">8.</span> <span class="nav-text">8.foldByKey</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#把相同的key中的values相加起来"><span class="nav-number">8.1.</span> <span class="nav-text">把相同的key中的values相加起来</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-foreachPartition"><span class="nav-number">9.</span> <span class="nav-text">9.foreachPartition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在不生成新的rdd1的情况下遍历或操作rdd"><span class="nav-number">9.1.</span> <span class="nav-text">在不生成新的rdd1的情况下遍历或操作rdd</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-keyBy"><span class="nav-number">10.</span> <span class="nav-text">10.keyBy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#以传入的参数做key"><span class="nav-number">10.1.</span> <span class="nav-text">以传入的参数做key</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-keys-values"><span class="nav-number">11.</span> <span class="nav-text">11.keys values</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接取出key或values的值"><span class="nav-number">11.1.</span> <span class="nav-text">直接取出key或values的值</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿源</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
