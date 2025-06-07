@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>快速生成文档大纲</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f2f4f8;
+      color: #333;
+    }
+    header {
+      background: #1a73e8;
+      color: #fff;
+      padding: 16px 32px;
+      font-size: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 24px 48px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    .field {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .field label {
+      width: 120px;
+      font-size: 16px;
+    }
+    .field input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .btn {
+      display: inline-block;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn:disabled {
+      background: #aaa;
+      cursor: default;
+    }
+    .outline {
+      padding: 16px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      white-space: pre-line;
+      font-size: 15px;
+      margin-top: 12px;
+    }
+    .status {
+      font-size: 14px;
+      color: #666;
+      margin-left: 12px;
+    }
+    .detail-btn {
+      color: #1a73e8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 16px;
+    }
+    .hidden {
+      display: none;
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 24px 32px;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+    .popup h3 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+    .popup button {
+      margin-top: 16px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>文档智能生成平台</header>
+  <div class="container">
+    <div class="section">
+      <h2>跳过思路论道，直接输入主题</h2>
+      <div class="field">
+        <label>文档主题：</label>
+        <input type="text" id="docTitle" placeholder="例如：工业互联网平台架构分析">
+        <span class="status" id="statusText">等待输入</span>
+      </div>
+      <button class="btn" onclick="generateOutline()">生成结构大纲</button>
+    </div>
+
+    <div class="section" id="outlineSection" style="display:none">
+      <h2>结构大纲（已优化）</h2>
+      <div class="outline" id="outlineContent"></div>
+      <button class="detail-btn" onclick="showPopup()">查看结构优化详情</button>
+    </div>
+  </div>
+
+  <div class="popup hidden" id="popupBox">
+    <h3>结构优化说明</h3>
+    <p>系统已根据主题内容进行章节重排，确保层次清晰、覆盖全面，并对冗余项进行合并。</p>
+    <button onclick="closePopup()">关闭</button>
+  </div>
+
+  <script>
+    function generateOutline() {
+      const input = document.getElementById("docTitle").value.trim();
+      const status = document.getElementById("statusText");
+      const section = document.getElementById("outlineSection");
+      const content = document.getElementById("outlineContent");
+
+      if (!input) {
+        status.textContent = "请输入主题";
+        return;
+      }
+
+      status.textContent = "处理中...";
+      setTimeout(() => {
+        const outline = `一、平台概述\n1. 项目背景\n2. 核心目标\n\n二、总体架构设计\n1. 系统分层结构\n2. 模块化组件划分\n\n三、数据流与通信机制\n1. 边缘采集网络\n2. 中台调度与处理\n\n四、安全与运维策略\n1. 权限控制方案\n2. 监控与告警机制\n\n五、典型应用场景\n1. 电力调度系统\n2. 智能设备远程管理`;
+        section.style.display = "block";
+        content.textContent = outline;
+        status.textContent = "生成完成";
+      }, 1000);
+    }
+
+    function showPopup() {
+      document.getElementById("popupBox").classList.remove("hidden");
+    }
+
+    function closePopup() {
+      document.getElementById("popupBox").classList.add("hidden");
+    }
+  </script>
+</body>
+</html>
